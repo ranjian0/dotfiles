@@ -100,6 +100,7 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
+export PATH=/home/ranjian0/.nimble/bin:$PATH
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
@@ -111,18 +112,5 @@ export PYENV_ROOT="$HOME/.pyenv"
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 
-. "$HOME/.cargo/env"
-export PATH="/usr/local/go/bin:~/go/bin:$PATH"
 export PATH="$PATH:/opt/nvim/bin"
 
-alias work="cd ~/Development"
-alias workbtools="cd ~/Development/Personal/building_tools"
-alias gf="git pull"
-alias gp="git push"
-alias gs="git status"
-alias gc="git checkout"
-alias gm="git merge"
-alias blender="blender.exe"
-
-export PATH="$HOME/.zig:$PATH"
-export PATH=/home/ranjian0/.nimble/bin:$PATH
