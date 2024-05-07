@@ -1,6 +1,0 @@
-alias gs="git status"
-alias gf="git pull"
-alias gp="git push"
-alias gs="git status"
-alias gc="git checkout"
-alias gm="git merge"

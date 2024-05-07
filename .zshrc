@@ -100,6 +100,17 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
+# aliases
+for file in .aliases/*
+do 
+  source "$file"
+done
+
+for file in .functions/*
+do
+  source "$file"
+done
+
 export PATH=/home/ranjian0/.nimble/bin:$PATH
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
