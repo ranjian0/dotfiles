@@ -6,11 +6,22 @@ sudo apt upgrade
 sudo apt -y install git build-essential vim ca-certificates curl gnupg gcc cmake
 
 # General command line tools
-sudo apt -y intall htop bat tmux fzf ripgrep fd-find zsh stow glances
+sudo apt -y intall htop bat tmux ripgrep fd-find zsh stow glances
 chsh -s $(which zsh)
+
+# -- fix bat conflit
+mkdir -p ~/.local/bin
+ln -s /usr/bin/batcat ~/.local/bin/bat
 
 # -- ohmyzsh
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+# -- fzf
+FZF_VERSION=$(curl -s "https://api.github.com/repos/junegunn/fzf/releases/latest" | grep -Po '"tag_name": "\K[^"]*')
+curl -Lo fzf.tar.gz "https://github.com/junegunn/fzf/releases/download/${FZF_VERSION}/fzf-${FZF_VERSION}-linux_amd64.tar.gz"
+tar xf fzf.tar.gz fzf
+sudo install fzf /usr/local/bin
+rm fzf.tar.gz
 
 # -- lazygit
 LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
