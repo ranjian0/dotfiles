@@ -6,7 +6,7 @@ sudo apt upgrade
 sudo apt -y install git build-essential vim ca-certificates curl gnupg gcc cmake
 
 # General command line tools
-sudo apt -y intall htop bat tmux ripgrep fd-find zsh stow glances
+sudo apt -y intall htop bat tmux ripgrep fd-find zsh stow glances tree
 chsh -s $(which zsh)
 
 # -- fix bat conflit
