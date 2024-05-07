@@ -133,3 +133,6 @@ done
 for file in .functions/*; do
 	source "$file"
 done
+
+# Set up fzf key bindings and fuzzy completion
+eval "$(fzf --bash)"

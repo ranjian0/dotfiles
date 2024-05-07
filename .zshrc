@@ -124,4 +124,5 @@ eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 
 export PATH="$PATH:/opt/nvim/bin"
-
+# Set up fzf key bindings and fuzzy completion
+eval "$(fzf --zsh)"
