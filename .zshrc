@@ -101,12 +101,12 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 # aliases
-for file in .aliases/*
+for file in ~/.aliases/*
 do 
   source "$file"
 done
 # functions
-for file in .functions/*
+for file in ~/.functions/*
 do
   source "$file"
 done
