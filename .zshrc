@@ -111,8 +111,9 @@ do
   source "$file"
 done
 
-export PATH=/home/ranjian0/.nimble/bin:$PATH
-export PATH=/home/ranjian0/.c3:$PATH
+export PATH=~/.go/bin:$PATH
+export PATH=~/.nimble/bin:$PATH
+export PATH=~/.c3:$PATH
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
