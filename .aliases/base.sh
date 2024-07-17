@@ -12,3 +12,4 @@ alias pipclean="pip freeze | cut -d "@" -f1 | xargs pip uninstall -y"
 alias venv="virtualenv venv && source venv/bin/activate"
 
 alias ni="npm install"
+alias nimrod="nim -r c --verbosity:0 --hints:off"
