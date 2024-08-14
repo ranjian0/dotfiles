@@ -1,7 +1,18 @@
 local M = {}
 
 function M.config()
-    require("neo-tree").setup {
+
+  -- Update neo-tree git status when Lazygit exits
+  vim.api.nvim_create_autocmd("TermClose", {
+    pattern = "*lazygit",
+    callback = function()
+      if package.loaded["neo-tree.sources.git_status"] then
+        require("neo-tree.sources.git_status").refresh()
+      end
+    end,
+  })
+
+  require("neo-tree").setup {
       deactivate = function()
         vim.cmd([[Neotree close]])
       end,
