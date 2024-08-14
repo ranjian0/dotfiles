@@ -107,26 +107,26 @@ map("n", "<leader>hs", ":<C-U>Gitsigns select_hunk<CR>")
 -- g: goto
 -- w: workspace
 -- e: diagnostics
-vim.keymap.set("n", "<leader>ee", ":Lspsaga show_line_diagnostics<cr>")
-vim.keymap.set("n", "<leader>ef", ":Lspsaga show_cursor_diagnostics<cr>")
-vim.keymap.set("n", "<leader>el", ":TroubleToggle<cr>") -- Show list of diagnostics across the workspace
-vim.keymap.set("n", "<leader>et", ":Trouble<cr>") -- Focus onto the trouble window
-vim.keymap.set("n", "<leader>lq", vim.diagnostic.setloclist)
-vim.keymap.set("n", "<leader>lk", ":Lspsaga hover_doc<cr>")
-vim.keymap.set("n", "<leader>ld", ":Lspsaga preview_definition<cr>")
-vim.keymap.set("n", "<leader>lr", ":Lspsaga rename<cr>")
-vim.keymap.set("n", "<leader>lh", vim.lsp.buf.signature_help)
-vim.keymap.set("n", "<leader>lf", function() vim.lsp.buf.format { async = true } end)
-vim.keymap.set("n", "<leader>la", ":Lspsaga code_action<cr>")
-vim.keymap.set("n", "<F12>", ":Lspsaga code_action<cr>")
+map("n", "<leader>ee", ":Lspsaga show_line_diagnostics<cr>")
+map("n", "<leader>ef", ":Lspsaga show_cursor_diagnostics<cr>")
+map("n", "<leader>el", ":TroubleToggle<cr>") -- Show list of diagnostics across the workspace
+map("n", "<leader>et", ":Trouble<cr>") -- Focus onto the trouble window
+map("n", "<leader>lq", vim.diagnostic.setloclist)
+map("n", "<leader>lk", ":Lspsaga hover_doc<cr>")
+map("n", "<leader>ld", ":Lspsaga preview_definition<cr>")
+map("n", "<leader>lr", ":Lspsaga rename<cr>")
+map("n", "<leader>lh", vim.lsp.buf.signature_help)
+map("n", "<leader>lf", function() vim.lsp.buf.format { async = true } end)
+map("n", "<leader>la", ":Lspsaga code_action<cr>")
+map("n", "<F12>", ":Lspsaga code_action<cr>")
 
-vim.keymap.set("n", "<leader>gd", ":Glance definitions<CR>")
-vim.keymap.set("n", "<F4>", ":Glance references<CR>")
-vim.keymap.set("n", "<leader>gt", ":Glance type_definitions<CR>")
-vim.keymap.set("n", "<leader>gi", ":Glance implementations<CR>")
-vim.keymap.set("n", "<leader>gp", ":Lspsaga diagnostic_jump_prev<cr>")
-vim.keymap.set("n", "<leader>gn", ":Lspsaga diagnostic_jump_next<cr>")
+map("n", "<leader>gd", ":Glance definitions<CR>")
+map("n", "<F4>", ":Glance references<CR>")
+map("n", "<leader>gt", ":Glance type_definitions<CR>")
+map("n", "<leader>gi", ":Glance implementations<CR>")
+map("n", "<leader>gp", ":Lspsaga diagnostic_jump_prev<cr>")
+map("n", "<leader>gn", ":Lspsaga diagnostic_jump_next<cr>")
 
-vim.keymap.set("n", "<leader>wa", vim.lsp.buf.add_workspace_folder)
-vim.keymap.set("n", "<leader>wr", vim.lsp.buf.remove_workspace_folder)
-vim.keymap.set("n", "<leader>wl", function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end)
+map("n", "<leader>wa", vim.lsp.buf.add_workspace_folder)
+map("n", "<leader>wr", vim.lsp.buf.remove_workspace_folder)
+map("n", "<leader>wl", function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end)
