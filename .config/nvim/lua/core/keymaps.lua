@@ -8,6 +8,9 @@ map("n", "<leader>l", "<cmd>Lazy<cr>", { desc = "Lazy" })
 map("n", "<leader>m", "<cmd>Mason<cr>", { desc = "Mason" })
 -- lazygit
 map("n", "<leader>gg", "<cmd>LazyGit<cr>", { desc = "LazyGit" })
+-- virtualenv selector 
+map("n", "<leader>cv", "<cmd>VenvSelect<cr>", { desc = "Select Virtualenv" })
+
 -- quit
 map("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit All" })
 

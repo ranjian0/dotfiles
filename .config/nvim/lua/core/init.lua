@@ -86,6 +86,7 @@ require("configs.telescope").config()
 require("configs.terminal").config()
 require("configs.git").config()
 
+require("configs.lang.python").config()
 
 require("core.keymaps")
 require("core.theme")
