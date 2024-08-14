@@ -78,7 +78,10 @@ require("core.plugins")
 
 -- plugin specific configs
 require("configs.treesitter").config()
+require("configs.autocomplete").config()
+require("configs.bufferline").config()
 require("configs.statusline").config()
+require("configs.filemanager").config()
 require("configs.telescope").config()
 require("configs.terminal").config()
 require("configs.git").config()
