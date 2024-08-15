@@ -85,7 +85,7 @@ require("configs.filemanager").config()
 require("configs.telescope").config()
 require("configs.terminal").config()
 require("configs.git").config()
-
+require("configs.gui").config()
 require("configs.lang.python").config()
 
 require("core.keymaps")

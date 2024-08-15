@@ -27,6 +27,10 @@ require("lazy").setup({
     "akinsho/bufferline.nvim",
     "moll/vim-bbye",
     "3rd/image.nvim",
+    {"folke/noice.nvim", dependencies = {
+      "MunifTanjim/nui.nvim",
+      "rcarriga/nvim-notify",
+    }},
     {
     "nvim-neo-tree/neo-tree.nvim",
     branch = "v3.x",
