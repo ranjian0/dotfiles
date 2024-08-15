@@ -61,6 +61,7 @@ require("lazy").setup({
     "BurntSushi/ripgrep",
     "nvim-telescope/telescope.nvim",
     {"kdheepak/lazygit.nvim", dependencies={"nvim-lua/plenary.nvim"}},
+    "numToStr/Comment.nvim",
 
     -- python
     {"linux-cultist/venv-selector.nvim", branch="regexp"},

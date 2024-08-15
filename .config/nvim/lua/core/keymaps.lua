@@ -5,7 +5,7 @@ map("n", "<leader>fe", ":Neotree toggle<cr>")
 -- lazy
 map("n", "<leader>l", "<cmd>Lazy<cr>", { desc = "Lazy" })
 -- mason
-map("n", "<leader>m", "<cmd>Mason<cr>", { desc = "Mason" })
+map("n", "<leader>cm", "<cmd>Mason<cr>", { desc = "Mason" })
 -- lazygit
 map("n", "<leader>gg", "<cmd>LazyGit<cr>", { desc = "LazyGit" })
 -- virtualenv selector 

@@ -1,7 +1,7 @@
 local M = {}
 
 function M.config()
-    require('noice').setup {
+    require('Comment').setup {
     }
 end
 
