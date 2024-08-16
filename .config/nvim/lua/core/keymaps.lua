@@ -1,7 +1,7 @@
 local map = vim.keymap.set
 
 -- file manager
-map("n", "<leader>fe", ":Neotree toggle<cr>")
+map("n", "<leader>e", ":Neotree toggle<cr>")
 -- lazy
 map("n", "<leader>l", "<cmd>Lazy<cr>", { desc = "Lazy" })
 -- mason
