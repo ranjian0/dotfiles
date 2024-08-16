@@ -37,9 +37,7 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
 -- synchronize system clipboard with neovim clipboard
-vim.schedule(function()
-  vim.opt.clipboard = "unnamedplus"
-end)
+vim.opt.clipboard = "unnamedplus"
 -- keeps the cursor at the center when scrolling
 vim.opt.scrolloff = 10
 
