@@ -13,7 +13,7 @@ vim.opt.virtualedit    = "block"
 vim.opt.inccommand     = "split"
 
 if (vim.fn.has('termguicolors')) then
-    vim.opt.termguicolors = true
+  vim.opt.termguicolors = true
 end
 vim.opt.autoindent    = true
 vim.opt.tabstop       = 2
@@ -28,8 +28,8 @@ vim.opt.signcolumn    = "yes" -- Prevent sign column flickering.
 -- Sets how neovim will display certain whitespace characters in the editor.
 --  See `:help 'list'`
 --  and `:help 'listchars'`
-vim.opt.list = true
-vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+vim.opt.list          = true
+vim.opt.listchars     = { tab = '» ', trail = '·', nbsp = '␣' }
 
 
 -- Leader key has to be set up before setting up lazy.nvim.
@@ -59,7 +59,7 @@ vim.g.loaded_tutor_mode_plugin = 1
 vim.g.loaded_remote_plugins    = 1
 
 -- Setup lazy.nvim
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+local lazypath                 = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
     "git",

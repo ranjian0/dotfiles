@@ -1,8 +1,7 @@
 local M = {}
 
 function M.config()
-    require('Comment').setup {
-    }
+  require('Comment').setup {}
 end
 
 return M

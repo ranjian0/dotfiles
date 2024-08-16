@@ -1,8 +1,7 @@
 local M = {}
 
 function M.config()
-    require('telescope').setup {
-    }
+  require('telescope').setup {}
 end
 
 return M

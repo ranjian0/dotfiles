@@ -52,14 +52,12 @@ map("n", "<leader>cS", "<cmd>:%s/\t/  /g<cr>", { desc = "Convert all tabs into s
 map("n", "<leader>cT", "<cmd>:%s/  /\t/g<cr>", { desc = "Convert all spaces into tabs" }) -- note tabs are replaced with 2 spaces
 -- Strip trailing whitespace
 map("n", "<leader>cW", "<cmd>:%s/\\s\\+$//e<cr>", { desc = "Trim all trailing whitespace" })
--- Convert selection to upper case
--- Convert selection to lower case
 -- Multiple cursor search (C-d in sublime)
 -- Multiple cursor Down
 -- Search and replace root dir
 
 -- Telescope
-map("n", "<leader>fb", "<cmd>Telescope buffers sort_mru=true sort_lastused=true<cr>", { desc = "Switch Buffer", })
+map("n", "<leader>fb", "<cmd>Telescope buffers sort_mru=true sort_lastused=true<cr>", { desc = "Switch Buffer" })
 map("n", "<leader>fg", "<cmd>Telescope live_grep<cr>", { desc = "Grep (Root Dir)" })
 map("n", "<leader>fc", "<cmd>Telescope git_commits<cr>", { desc = "Commit History" })
 map("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "Find Files (Root Dir)" })
