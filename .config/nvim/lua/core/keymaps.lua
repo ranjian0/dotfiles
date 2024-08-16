@@ -7,12 +7,12 @@ map("n", "<leader>l", "<cmd>Lazy<cr>", { desc = "Lazy" })
 -- mason
 map("n", "<leader>cm", "<cmd>Mason<cr>", { desc = "Mason" })
 -- lazygit
-map("n", "<leader>gg", "<cmd>LazyGit<cr>", { desc = "LazyGit" })
+map("n", "<leader>g", "<cmd>LazyGit<cr>", { desc = "LazyGit" })
 -- virtualenv selector 
 map("n", "<leader>cv", "<cmd>VenvSelect<cr>", { desc = "Select Virtualenv" })
 
 -- quit
-map("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit All" })
+map("n", "<leader>q", "<cmd>qa<cr>", { desc = "Quit All" })
 
 -- save file
 map({ "i", "x", "n", "s" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save File" })
