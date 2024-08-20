@@ -44,8 +44,8 @@ map("v", "<A-k>", ":m '<-2<cr>gv=gv", { desc = "Move Up" })
 
 
 -- Duplicate line up or down
-map("n", "<C-j>", "yyp", { desc = "Duplicate current line down" })
-map("n", "<C-k>", "yy1kp", { desc = "Duplicate current line up" })
+map("n", "<C-J>", "yyp", { desc = "Duplicate current line down" })
+map("n", "<C-K>", "yy1kp", { desc = "Duplicate current line up" })
 -- Convert tabs to spaces
 map("n", "<leader>cS", "<cmd>:%s/\t/  /g<cr>", { desc = "Convert all tabs into spaces" }) -- note tabs are replaced with 2 spaces
 -- Convert spaces to tabs
