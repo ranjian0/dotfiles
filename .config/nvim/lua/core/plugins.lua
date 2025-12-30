@@ -59,6 +59,7 @@ require("lazy").setup({
   "dnlhc/glance.nvim",
   "tamago324/nlsp-settings.nvim",
   "folke/trouble.nvim",
+  "folke/which-key.nvim",
   "nvim-lualine/lualine.nvim",
   "akinsho/toggleterm.nvim",
   "BurntSushi/ripgrep",
