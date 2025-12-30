@@ -39,12 +39,10 @@ curl -sL https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.
 	sudo tar -xzf - --strip-components=1 --overwrite -C /usr
 
 # Programming tools
-# -- python pyenv
-curl https://pyenv.run | sh
+# -- python uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # -- node nvm
 NVM_VERSION=$(curl -s "https://api.github.com/repos/nvm-sh/nvm/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
 curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh" | sh
 
-# -- choosenim
-curl https://nim-lang.org/choosenim/init.sh -sSf | sh
