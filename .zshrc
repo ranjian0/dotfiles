@@ -111,19 +111,13 @@ do
   source "$file"
 done
 
-export PATH=~/.go/bin:$PATH
-export PATH=~/.nimble/bin:$PATH
-export PATH=~/.c3:$PATH
+export PATH="/mnt/c/Program Files/Sublime Text":$PATH
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 . "$HOME/.cargo/env"
 
 
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
 
 export PATH="$PATH:/opt/nvim/bin"
 # Set up fzf key bindings and fuzzy completion
