@@ -2,7 +2,7 @@
 name: researcher
 description: Analyzes codebase architecture and dependencies
 mode: subagent
-model: z.ai/glm-4.7
+model: zai-coding-plan/glm-4.7
 temperature: 0.2
 tools:
   write: false

@@ -2,7 +2,7 @@
 name: planner
 description: Manages the PLAN.md roadmap
 mode: subagent
-model: z.ai/glm-4.7
+model: zai-coding-plan/glm-4.7
 temperature: 0.3
 tools:
   write: true

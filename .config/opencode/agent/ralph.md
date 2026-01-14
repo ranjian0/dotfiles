@@ -1,8 +1,8 @@
 ---
 name: ralph
 description: The Orchestrator. Manages the Research -> Plan -> Act -> Heal -> Commit loop.
-mode: agent
-model: z.ai/glm-4.7
+mode: subagent
+model: zai-coding-plan/glm-4.7
 temperature: 0.1
 tools:
   write: true

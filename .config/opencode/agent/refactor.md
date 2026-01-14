@@ -2,7 +2,7 @@
 name: refactor
 description: Improves code structure without changing behavior
 mode: subagent
-model: z.ai/glm-4.7
+model: zai-coding-plan/glm-4.7
 temperature: 0.0
 tools:
   write: true

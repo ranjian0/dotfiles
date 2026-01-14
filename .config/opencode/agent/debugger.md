@@ -2,7 +2,7 @@
 name: debugger
 description: Analyzes stack traces and fixes logic errors
 mode: subagent
-model: z.ai/glm-4.7
+model: zai-coding-plan/glm-4.7
 temperature: 0.0
 tools:
   write: true
