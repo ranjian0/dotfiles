@@ -140,3 +140,13 @@ export FZF_CTRL_R_OPTS="
 export FZF_ALT_C_OPTS="
   --walker-skip .git,node_modules,target
   --preview 'tree -C {}'"
+
+# bun completions
+[ -s "/home/ranjian0/.local/share/reflex/bun/_bun" ] && source "/home/ranjian0/.local/share/reflex/bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.local/share/reflex/bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# opencode
+export PATH=/home/ranjian0/.opencode/bin:$PATH

@@ -1,7 +1,7 @@
 alias work="cd ~/Development"
 
-alias aptu="sudo apt update && sudo apt -y upgrade"
-alias apti="sudo apt install"
+alias apu="sudo apt update && sudo apt -y upgrade"
+alias api="sudo apt install"
 alias aptr="sudo apt -y remove"
 alias apts="apt list | fzf --height 60% --reverse --info inline --border"
 alias aptsi="apt list --installed| fzf --height 60% --reverse --info inline --border"
