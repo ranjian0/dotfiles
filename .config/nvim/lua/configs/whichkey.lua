@@ -71,6 +71,25 @@ function M.config()
     { "<leader>hh", desc = "Toggle Menu" },
     { "<leader>ht", desc = "Telescope" },
 
+    -- Opencode group
+    { "<leader>o", group = "Opencode", icon = { icon = "", color = "cyan" } },
+    { "<leader>og", desc = "Toggle" },
+    { "<leader>oi", desc = "Open Input" },
+    { "<leader>oI", desc = "New Session" },
+    { "<leader>oo", desc = "Open Output" },
+    { "<leader>ot", desc = "Toggle Focus" },
+    { "<leader>oq", desc = "Close" },
+    { "<leader>os", desc = "Select Session" },
+    { "<leader>oR", desc = "Rename Session" },
+    { "<leader>op", desc = "Configure Provider" },
+    { "<leader>oz", desc = "Toggle Zoom" },
+    { "<leader>od", desc = "Open Diff" },
+    { "<leader>o]", desc = "Next Diff" },
+    { "<leader>o[", desc = "Prev Diff" },
+    { "<leader>oc", desc = "Close Diff" },
+    { "<leader>ox", desc = "Swap Position" },
+    { "<leader>o/", desc = "Quick Chat" },
+
     -- LSP group
     { "<leader>l", group = "LSP", icon = { icon = "", color = "blue" } },
     { "<leader>la", desc = "Code Action" },
