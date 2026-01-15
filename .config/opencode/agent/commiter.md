@@ -2,7 +2,6 @@
 name: committer
 description: Handles git staging and semantic commits
 mode: subagent
-model: zai-coding-plan/glm-4.7
 temperature: 0.1
 tools:
   write: false

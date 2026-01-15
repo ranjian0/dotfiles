@@ -2,7 +2,6 @@
 name: tdd_architect
 description: Writes tests and implementation code (Red/Green)
 mode: subagent
-model: zai-coding-plan/glm-4.7
 temperature: 0.0
 tools:
   write: true
