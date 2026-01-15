@@ -11,10 +11,6 @@ vim.opt.splitright     = true
 vim.opt.ignorecase     = true
 vim.opt.virtualedit    = "block"
 vim.opt.inccommand     = "split"
-
-if (vim.fn.has('termguicolors')) then
-  vim.opt.termguicolors = true
-end
 vim.opt.autoindent    = true
 vim.opt.tabstop       = 2
 vim.opt.shiftwidth    = 2

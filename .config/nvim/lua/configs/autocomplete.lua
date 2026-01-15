@@ -4,7 +4,26 @@ function M.config()
   -- Setup Mason and use it to auto-configure LSP tools
   require("mason").setup()
 
-  require("mason-lspconfig").setup()
+  require("mason-lspconfig").setup {
+    ensure_installed = {
+      "lua_ls",
+      "pyright",
+      "ts_ls",
+      "jsonls",
+      "yamlls",
+      "bashls",
+    },
+  }
+
+  -- Setup LSP servers
+  local lspconfig = require("lspconfig")
+
+  lspconfig.lua_ls.setup {}
+  lspconfig.pyright.setup {}
+  lspconfig.ts_ls.setup {}
+  lspconfig.jsonls.setup {}
+  lspconfig.yamlls.setup {}
+  lspconfig.bashls.setup {}
 
   -- Setup nvim-cmp.
   local cmp = require("cmp")
@@ -64,7 +83,7 @@ function M.config()
     loader = "json"
   })
 
-  require("luasnip.loaders.from_snipmate").lazy_load({ paths = "~/.config/nvim/snippets/" })
+  require("luasnip.loaders.from_snipmate").lazy_load({ paths = vim.fn.expand("~/.config/nvim/snippets/") })
   luasnip.filetype_extend("all", { "_" })
 
   --- Set up LspSaga.

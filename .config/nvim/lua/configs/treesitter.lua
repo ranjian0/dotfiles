@@ -8,7 +8,7 @@ function M.config()
       "python", "nim", "bash", "cpp", "dockerfile", "go", "glsl", "html", "javascript", "json",
       "markdown", "markdown_inline", "nginx", "rst", "rust", "sql", "toml", "typescript", "wgsl", "yaml", "zig"
     },                       -- for installing specific parsers
-    sync_install = true,     -- install synchronously
+    sync_install = false,    -- install asynchronously to avoid blocking startup
     ignore_install = {},     -- parsers to not install
     highlight = {
       enable = true,

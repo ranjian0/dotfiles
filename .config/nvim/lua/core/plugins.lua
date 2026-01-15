@@ -7,18 +7,15 @@ require("lazy").setup({
   "miikanissi/modus-themes.nvim",
   "rmehri01/onenord.nvim",
   { "catppuccin/nvim",            name = "catppuccin" },
-  "liuchengxu/space-vim-dark",
   { "ahmedabdulrahman/aylin.vim", branch = "0.5-nvim" },
   "rebelot/kanagawa.nvim",
   "NLKNguyen/papercolor-theme",
-  "liuchengxu/space-vim-dark",
   "sainnhe/edge",
   "nyoom-engineering/oxocarbon.nvim",
   "AlexvZyl/nordic.nvim",
   "lewis6991/gitsigns.nvim",
   "kaicataldo/material.vim",
   "neanias/everforest-nvim",
-  "rebelot/kanagawa.nvim",
 
   -- basics
   "kyazdani42/nvim-web-devicons",
