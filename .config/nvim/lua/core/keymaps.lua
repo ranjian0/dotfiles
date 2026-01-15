@@ -1,7 +1,7 @@
 local map = vim.keymap.set
 
 -- file manager
-map("n", "<leader>fe", ":Neotree toggle<cr>")
+map("n", "<leader>fe", "<cmd>Neotree toggle<cr>", { desc = "File Explorer" })
 -- lazy
 map("n", "<leader>ll", "<cmd>Lazy<cr>", { desc = "Lazy" })
 -- mason
@@ -19,8 +19,6 @@ map({ "i", "x", "n", "s" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save File" })
 map("v", "<", "<gv")
 map("v", ">", ">gv")
 
--- Clear search with <esc>
-map({ "i", "n" }, "<esc>", "<cmd>noh<cr><esc>", { desc = "Escape and Clear hlsearch" })
 
 -- Move to window using the <ctrl> hjkl keys
 map("n", "<C-h>", "<C-w>h", { desc = "Go to Left Window", remap = true })
@@ -64,49 +62,80 @@ map("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "Find Files (Ro
 map("n", "<leader>ft", "<cmd>Telescope colorscheme<cr>", { desc = "Colorscheme with Preview" })
 map("n", "<leader>fk", "<cmd>Telescope keymaps<cr>", { desc = "Key Maps" })
 map("n", "<leader>ffg", "<cmd>Telescope git_files<cr>", { desc = "Find Files (git-files)" })
+map("n", "<leader>fu", "<cmd>Telescope frecency workspace=CWD<cr>", { desc = "Recent Files" })
+map("n", "<leader>fw", "<cmd>Telescope undo<cr>", { desc = "Undo History" })
+map("n", "<leader>fp", "<cmd>Telescope projects<cr>", { desc = "Projects" })
 
 -- b: buffer
-map("n", "<leader>bn", ":bn<cr>")
-map("n", "<leader>bp", ":bp<cr>")
-map("n", "<leader>bd", ":Bdelete<cr>")
+map("n", "<leader>bn", "<cmd>bn<cr>", { desc = "Next Buffer" })
+map("n", "<leader>bp", "<cmd>bp<cr>", { desc = "Previous Buffer" })
+map("n", "<leader>bd", "<cmd>Bdelete<cr>", { desc = "Delete Buffer" })
 
 -- t: terminal
 -- use <f5> to toggle terminal, this can be set in lua/configs/terminal.lua
 -- the default position is also set in lua/configs/terminal.lua
 local terminal = require("toggleterm.terminal")
-map("t", "<C-g>", "<C-\\><C-n>")
-map("n", "<leader>tt", ":ToggleTerm direction=tab<cr>")
-map("n", "<leader>tn", function() terminal.Terminal:new():toggle() end)
-map("n", "<leader>tf", ":ToggleTerm direction=float<cr>")
-map("n", "<leader>th", ":ToggleTerm direction=horizontal<cr>")
-map("n", "<leader>tv", ":ToggleTerm direction=vertical<cr>")
+map("t", "<C-g>", "<C-\\><C-n>", { desc = "Exit Terminal Mode" })
+map("n", "<leader>tt", "<cmd>ToggleTerm direction=tab<cr>", { desc = "Terminal Tab" })
+map("n", "<leader>tn", function() terminal.Terminal:new():toggle() end, { desc = "Terminal New" })
+map("n", "<leader>tF", "<cmd>ToggleTerm direction=float<cr>", { desc = "Terminal Float" })
+map("n", "<leader>th", "<cmd>ToggleTerm direction=horizontal<cr>", { desc = "Terminal Horizontal" })
+map("n", "<leader>tv", "<cmd>ToggleTerm direction=vertical<cr>", { desc = "Terminal Vertical" })
 
 -- git
 map("n", "<leader>gg", "<cmd>LazyGit<cr>", { desc = "LazyGit" })
-map("n", "<leader>gu", ":Gitsigns undo_stage_hunk<cr>")
-  map("n", "<leader>gn", ":Gitsigns next_hunk<cr>")
-  map("n", "<leader>gN", ":Gitsigns prev_hunk<cr>")
-map("n", "<leader>gc", ":Gitsigns preview_hunk<cr>")
-map("n", "<leader>gr", ":Gitsigns reset_hunk<cr>")
-map("n", "<leader>gR", ":Gitsigns reset_buffer")
-map("n", "<leader>gl", ":Gitsigns blame_line<cr>")
-map("n", "<leader>gd", ":Gitsigns diffthis<cr>")
-map("n", "<leader>gs", ":<C-U>Gitsigns select_hunk<CR>")
+map("n", "<leader>gu", "<cmd>Gitsigns undo_stage_hunk<cr>", { desc = "Undo Stage Hunk" })
+map("n", "<leader>gn", "<cmd>Gitsigns next_hunk<cr>", { desc = "Next Hunk" })
+map("n", "<leader>gN", "<cmd>Gitsigns prev_hunk<cr>", { desc = "Previous Hunk" })
+map("n", "<leader>gc", "<cmd>Gitsigns preview_hunk<cr>", { desc = "Preview Hunk" })
+map("n", "<leader>gD", "<cmd>DiffviewOpen<cr>", { desc = "Git Diff" })
+map("n", "<leader>gr", "<cmd>Gitsigns reset_hunk<cr>", { desc = "Reset Hunk" })
+map("n", "<leader>gR", "<cmd>Gitsigns reset_buffer<cr>", { desc = "Reset Buffer" })
+map("n", "<leader>gl", "<cmd>Gitsigns blame_line<cr>", { desc = "Blame Line" })
+map("n", "<leader>gd", "<cmd>Gitsigns diffthis<cr>", { desc = "Diff This" })
+map("n", "<leader>gs", "<cmd>Gitsigns select_hunk<cr>", { desc = "Select Hunk" })
 
 -- LSP
-map("n", "<leader>la", ":Lspsaga code_action<cr>")
-map("n", "<leader>ld", ":Lspsaga preview_definition<cr>")
-map("n", "<leader>lr", ":Lspsaga rename<cr>")
-map("n", "<leader>lq", vim.diagnostic.setloclist)
-map("n", "<leader>lh", vim.lsp.buf.signature_help)
-map("n", "<leader>lf", function() vim.lsp.buf.format { async = true } end)
-map("n", "<leader>lk", ":Lspsaga hover_doc<cr>")
-map("n", "<leader>lo", ":Lspsaga outline<cr>")
-map("n", "<leader>ln", ":Lspsaga diagnostic_jump_next<cr>")
-map("n", "<leader>lN", ":Lspsaga diagnostic_jump_prev<cr>")
+map("n", "<leader>la", "<cmd>Lspsaga code_action<cr>", { desc = "Code Action" })
+map("n", "<leader>ld", "<cmd>Lspsaga preview_definition<cr>", { desc = "Preview Definition" })
+map("n", "<leader>lr", "<cmd>Lspsaga rename<cr>", { desc = "Rename" })
+map("n", "<leader>lq", vim.diagnostic.setloclist, { desc = "Diagnostics to Loclist" })
+map("n", "<leader>lh", vim.lsp.buf.signature_help, { desc = "Signature Help" })
+map("n", "<leader>lf", function() vim.lsp.buf.format { async = true } end, { desc = "Format" })
+map("n", "<leader>lk", "<cmd>Lspsaga hover_doc<cr>", { desc = "Hover Doc" })
+map("n", "<leader>lo", "<cmd>Lspsaga outline<cr>", { desc = "Outline" })
+map("n", "<leader>ln", "<cmd>Lspsaga diagnostic_jump_next<cr>", { desc = "Next Diagnostic" })
+map("n", "<leader>lN", "<cmd>Lspsaga diagnostic_jump_prev<cr>", { desc = "Previous Diagnostic" })
 
+-- quickfix
+map("n", "[q", "<cmd>cprev<cr>", { desc = "Previous quickfix" })
+map("n", "]q", "<cmd>cnext<cr>", { desc = "Next quickfix" })
+map("n", "[Q", "<cmd>cfirst<cr>", { desc = "First quickfix" })
+map("n", "]Q", "<cmd>clast<cr>", { desc = "Last quickfix" })
+map("n", "<leader>xq", "<cmd>copen<cr>", { desc = "Open quickfix" })
+map("n", "<leader>xl", "<cmd>lopen<cr>", { desc = "Open loclist" })
 
-map("n", "<leader>lgd", ":Glance definitions<CR>")
-map("n", "<leader>lgr", ":Glance references<CR>")
-map("n", "<leader>lgt", ":Glance type_definitions<CR>")
-map("n", "<leader>lgi", ":Glance implementations<CR>")
+-- search and replace
+map("n", "<leader>sr", "<cmd>Spectre<cr>", { desc = "Search and Replace" })
+map("n", "<leader>sw", "<cmd>Spectre open_file_cwd<cr>", { desc = "Search in Current File" })
+map("n", "<leader>sp", "<cmd>Spectre open_visual<cr>", { desc = "Search in Selection" })
+
+-- testing
+map("n", "<leader>tr", "<cmd>lua require('neotest').run.run()<cr>", { desc = "Run Test" })
+map("n", "<leader>tf", "<cmd>lua require('neotest').run.run(vim.fn.expand('%'))<cr>", { desc = "Run File Tests" })
+map("n", "<leader>td", "<cmd>lua require('neotest').run.run({strategy = 'dap'})<cr>", { desc = "Debug Test" })
+map("n", "<leader>ts", "<cmd>lua require('neotest').summary.toggle()<cr>", { desc = "Test Summary" })
+map("n", "<leader>to", "<cmd>lua require('neotest').output.open({ enter = true })<cr>", { desc = "Test Output" })
+
+-- harpoon
+map("n", "<leader>h", "<cmd>Telescope harpoon marks<cr>", { desc = "Harpoon Marks" })
+
+-- session
+map("n", "<leader>ps", "<cmd>SessionSave<cr>", { desc = "Save Session" })
+map("n", "<leader>pl", "<cmd>SessionLoad<cr>", { desc = "Load Session" })
+map("n", "<leader>pd", "<cmd>SessionDelete<cr>", { desc = "Delete Session" })
+
+map("n", "<leader>lgd", "<cmd>Glance definitions<cr>", { desc = "Glance Definitions" })
+map("n", "<leader>lgr", "<cmd>Glance references<cr>", { desc = "Glance References" })
+map("n", "<leader>lgt", "<cmd>Glance type_definitions<cr>", { desc = "Glance Type Definitions" })
+map("n", "<leader>lgi", "<cmd>Glance implementations<cr>", { desc = "Glance Implementations" })

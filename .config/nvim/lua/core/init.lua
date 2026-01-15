@@ -1,3 +1,8 @@
+-- Enable vim.loader for faster module loading
+if vim.loader then
+  vim.loader.enable()
+end
+
 -- Basics.
 vim.opt.number         = true
 vim.opt.relativenumber = true
@@ -56,7 +61,7 @@ vim.g.loaded_remote_plugins    = 1
 
 -- Setup lazy.nvim
 local lazypath                 = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
   vim.fn.system({
     "git",
     "clone",
@@ -66,9 +71,31 @@ if not vim.loop.fs_stat(lazypath) then
     lazypath,
   })
 end
-vim.opt.rtp:prepend(lazypath)
+  vim.opt.rtp:prepend(lazypath)
 
-require("core.plugins")
+  require("lazy").setup({
+    dev = {
+      path = vim.fn.stdpath("data") .. "/projects",
+      fallback = false,
+    },
+    performance = {
+      rtp = {
+        disabled_plugins = {
+          "gzip",
+          "tarPlugin",
+          "tohtml",
+          "tutor",
+          "zipPlugin",
+        },
+      },
+    },
+    defaults = {
+      lazy = false,
+    },
+    spec = {
+      { import = "core.plugins" },
+    },
+  })
 
 -- plugin specific configs
 require("configs.treesitter").config()
@@ -78,10 +105,29 @@ require("configs.statusline").config()
 require("configs.filemanager").config()
 require("configs.telescope").config()
 require("configs.terminal").config()
-require("configs.git").config()
-require("configs.gui").config()
+require("configs.gitsigns").config()
+require("configs.noice").config()
+require("configs.whichkey").config()
 require("configs.editor").config()
 require("configs.lang.python").config()
+require("configs.format").config()
+require("configs.mini_pairs").config()
+require("configs.lint").config()
+require("configs.surround").config()
+require("configs.spectre").config()
+require("configs.harpoon").config()
+require("configs.indent").config()
+require("configs.illuminate").config()
+require("configs.hipatterns").config()
+require("configs.better_escape").config()
+require("configs.diffview").config()
+require("configs.conflict").config()
+require("configs.persisted").config()
+require("configs.project").config()
+require("configs.test").config()
+require("configs.colorizer").config()
+require("configs.mini_ai").config()
 
 require("core.keymaps")
+require("core.autocmds")
 require("core.theme")

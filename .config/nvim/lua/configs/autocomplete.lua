@@ -1,3 +1,5 @@
+
+
 local M = {}
 
 function M.config()
@@ -16,14 +18,12 @@ function M.config()
   }
 
   -- Setup LSP servers
-  local lspconfig = require("lspconfig")
-
-  lspconfig.lua_ls.setup {}
-  lspconfig.pyright.setup {}
-  lspconfig.ts_ls.setup {}
-  lspconfig.jsonls.setup {}
-  lspconfig.yamlls.setup {}
-  lspconfig.bashls.setup {}
+  vim.lsp.config("lua_ls", {})
+  vim.lsp.config("pyright", {})
+  vim.lsp.config("ts_ls", {})
+  vim.lsp.config("jsonls", {})
+  vim.lsp.config("yamlls", {})
+  vim.lsp.config("bashls", {})
 
   -- Setup nvim-cmp.
   local cmp = require("cmp")
@@ -93,9 +93,6 @@ function M.config()
       kind = {
         Folder = { " " },
       },
-    },
-    lightbulb = {
-      enable = false,       -- Annoying
     },
     scroll_preview = {
       scroll_down = '<C-n>',

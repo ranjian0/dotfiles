@@ -1,4 +1,4 @@
-require("lazy").setup({
+return {
   -- themes
   "sainnhe/sonokai",
   "tiagovla/tokyodark.nvim",
@@ -13,7 +13,6 @@ require("lazy").setup({
   "sainnhe/edge",
   "nyoom-engineering/oxocarbon.nvim",
   "AlexvZyl/nordic.nvim",
-  "lewis6991/gitsigns.nvim",
   "kaicataldo/material.vim",
   "neanias/everforest-nvim",
 
@@ -26,6 +25,7 @@ require("lazy").setup({
   "3rd/image.nvim",
   {
     "folke/noice.nvim",
+    event = "VeryLazy",
     dependencies = {
       "MunifTanjim/nui.nvim",
       "rcarriga/nvim-notify",
@@ -34,14 +34,16 @@ require("lazy").setup({
   {
     "nvim-neo-tree/neo-tree.nvim",
     branch = "v3.x",
+    cmd = "Neotree",
     dependencies = {
       "nvim-lua/plenary.nvim",
-      "nvim-tree/nvim-web-devicons",     -- not strictly required, but recommended
+      "nvim-tree/nvim-web-devicons",
       "MunifTanjim/nui.nvim",
-      "3rd/image.nvim",                  -- Optional image support in preview window: See `# Preview Mode` for more information
+      "3rd/image.nvim",
     }
   },
 
+  -- LSP & completion
   "williamboman/mason.nvim",
   { "williamboman/mason-lspconfig.nvim", dependencies = { "mason.nvim" } },
   "neovim/nvim-lspconfig",
@@ -53,17 +55,50 @@ require("lazy").setup({
   "hrsh7th/nvim-cmp",
   "L3MON4D3/LuaSnip",
   "nvim-treesitter/nvim-treesitter",
+  "nvim-treesitter/nvim-treesitter-textobjects",
   "dnlhc/glance.nvim",
   "tamago324/nlsp-settings.nvim",
   "folke/trouble.nvim",
-  "folke/which-key.nvim",
+  {
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    init = function()
+      vim.o.timeout = true
+      vim.o.timeoutlen = 500
+    end,
+  },
   "nvim-lualine/lualine.nvim",
   "akinsho/toggleterm.nvim",
+  "lewis6991/gitsigns.nvim",
   "BurntSushi/ripgrep",
   "nvim-telescope/telescope.nvim",
-  { "kdheepak/lazygit.nvim",             dependencies = { "nvim-lua/plenary.nvim" } },
+  { "kdheepak/lazygit.nvim", dependencies = { "nvim-lua/plenary.nvim" } },
   "numToStr/Comment.nvim",
+  "rafamadriz/friendly-snippets",
+  "saadparwaiz1/cmp_luasnip",
+  "echasnovski/mini.pairs",
+  "echasnovski/mini.ai",
+  "echasnovski/mini.hipatterns",
+  "echasnovski/mini.indentscope",
+  "echasnovski/mini.surround",
+  "stevearc/conform.nvim",
+  "mfussenegger/nvim-lint",
+  "nvim-telescope/telescope-frecency.nvim",
+  "debugloop/telescope-undo.nvim",
+  "nvim-pack/nvim-spectre",
+  "ThePrimeagen/harpoon",
+  "lukas-reineke/indent-blankline.nvim",
+  "RRethy/vim-illuminate",
+  "norcalli/nvim-colorizer.lua",
+  "max397574/better-escape.nvim",
+  "olimorris/persisted.nvim",
+  "ahmedkhalf/project.nvim",
+  "nvim-neotest/nvim-nio",
+  "nvim-neotest/neotest",
+  "sindrets/diffview.nvim",
+  "akinsho/git-conflict.nvim",
+  "nvim-neotest/neotest-python",
 
   -- python
-  { "linux-cultist/venv-selector.nvim", branch = "regexp" },
-})
+  { "linux-cultist/venv-selector.nvim" },
+}
