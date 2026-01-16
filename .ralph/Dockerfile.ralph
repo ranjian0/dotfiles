@@ -1,0 +1,66 @@
+# Base: Ubuntu (Guarantees OpenCode binary works)
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# 1. Install System Dependencies
+# curl/xz: for installing Nix
+# git/python3: for Ralph
+# nodejs/npm: for installing OpenCode
+RUN apt-get update && apt-get install -y \
+    curl \
+    xz-utils \
+    git \
+    python3 \
+    nodejs \
+    npm \
+    sudo \
+    && rm -rf /var/lib/apt/lists/*
+
+# We want Ralph to have UID 1000 to match the host user's file permissions
+RUN userdel -r ubuntu || true
+
+# We explicitly set UID 1000 to match the default Linux host user
+RUN useradd -m -s /bin/bash -u 1000 ralph && \
+    echo "ralph ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# 3. Switch to Ralph
+# From now on, we are NOT root. This makes the Nix installer happy.
+USER ralph
+WORKDIR /home/ralph
+
+RUN curl -L https://nixos.org/nix/install | sh
+
+# 5. Configure Environment Variables for Nix
+# The installer updates .bashrc, but Docker needs these ENV vars explicitly
+ENV USER=ralph
+ENV PATH="/home/ralph/.nix-profile/bin:$PATH"
+ENV NIX_PATH="nixpkgs=/home/ralph/.nix-defexpr/channels/nixpkgs"
+
+# 6. Enable Flakes
+RUN mkdir -p ~/.config/nix && \
+    echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
+
+# 7. Configure NPM for Non-Root
+# We tell NPM to install global packages in Ralph's home directory
+ENV NPM_CONFIG_PREFIX=/home/ralph/.npm-global
+ENV PATH=$PATH:/home/ralph/.npm-global/bin
+RUN mkdir -p /home/ralph/.npm-global
+
+# 5. Install OpenCode
+# This will now work because Ubuntu provides the standard glibc libraries
+RUN npm install -g opencode-ai
+
+# 6. Configure Git
+RUN git config --global user.email "ralph@bot.com" && \
+    git config --global user.name "Ralph Bot" && \
+    git config --global --add safe.directory /workspace
+
+# 7. Setup Workspace
+WORKDIR /workspace
+
+# 8. Copy the Orchestrator (Ensure ralph_nix.py is in the build folder)
+COPY --chown=ralph:ralph ralph_runner.py /usr/local/bin/ralph
+RUN chmod +x /usr/local/bin/ralph
+
+ENTRYPOINT ["/usr/local/bin/ralph"]

@@ -150,3 +150,6 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 
 # opencode
 export PATH=/home/ranjian0/.opencode/bin:$PATH
+
+# ralph
+export PATH=/home/ranjian0/.ralph:$PATH

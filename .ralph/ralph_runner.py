@@ -56,6 +56,10 @@ You are a Visionary CTO.
 2. Create `specs/main.md`.
 3. In this spec, answer every question definitively. Make specific tech stack choices.
 4. Do not ask the user. You have authority.
+**CRITICAL**: Create a `flake.nix` file that provides the development environment.
+- Include ALL necessary languages (go, rust, python, node).
+- Include ALL build tools (cmake, gcc, make).
+- Use the `nixpkgs` input.
 """,
 
     "ralph-planner": """---
@@ -83,6 +87,7 @@ Example:
 - [ ] [ID:003] Auth Tests || VERIFY: npm test tests/auth.test.js
 
 Make the tasks granular. Steps must be verifiable via CLI.
+**NOTE**: Assume the environment defined in `flake.nix` is active.
 """,
 
     "ralph-builder": """---
@@ -108,21 +113,16 @@ You are a Senior Engineer.
 # --- CORE SYSTEM ---
 
 class RalphSystem:
-    def __init__(self, root_dir):
+    def __init__(self):
         # Resolve to absolute path to avoid ambiguity
-        self.root_dir = os.path.abspath(root_dir)
         self.plan_file = "IMPLEMENTATION_PLAN.md"
         self.feedback = ""
-        
-        if not os.path.isdir(self.root_dir):
-            log(f"Directory not found: {self.root_dir}", "ERROR")
-            sys.exit(1)
-            
-        log(f"Ralph operating in: {self.root_dir}", "SYSTEM")
+                    
+        log(f"Ralph Started!", "SYSTEM")
 
     def _path(self, *paths):
         """Helper to construct absolute paths based on project root."""
-        return os.path.join(self.root_dir, *paths)
+        return os.path.join(".", *paths)
 
     def ensure_agents(self):
         """Generates the agent definition files dynamically."""
@@ -137,17 +137,23 @@ class RalphSystem:
 
     def run_opencode(self, agent: str, prompt: str):
         """Wraps the OpenCode CLI, setting CWD explicitly."""
-        cmd = ["opencode", "run", "--agent", agent, "--model", "zai-coding-plan/glm-4.7", prompt]
+        cmd = ["nix", "develop", "--command", 
+               "opencode", "run", "--agent", agent, "--model", "zai-coding-plan/glm-4.7", prompt]
         try:
             # check=True raises CalledProcessError on non-zero exit
             # cwd=self.root_dir ensures opencode operates in the project folder
-            subprocess.run(cmd, check=True, cwd=self.root_dir)
+            subprocess.run(cmd, shell=True, check=True)
         except subprocess.CalledProcessError:
             log(f"Agent {agent} crashed.", "ERROR")
             sys.exit(1)
         except FileNotFoundError:
             log("Command 'opencode' not found. Is it installed?", "ERROR")
             sys.exit(1)
+
+    def verify_command(self, cmd):
+        # Run verification inside the isolated environment
+        nix_cmd = f"nix develop --command bash -c '{cmd}'"
+        return subprocess.run(nix_cmd, shell=True, capture_output=True, text=True)
 
     def phase_1_analysis(self):
         if not os.path.exists(self._path("ideas.txt")):
@@ -161,10 +167,12 @@ class RalphSystem:
             log("Skipping Phase 1 (questions.md exists)")
 
     def phase_2_architect(self):
-        if not os.path.exists(self._path("specs", "main.md")):
+        if not os.path.exists(self._path("specs", "main.md")) or not os.path.exists("flake.nix"):
             log("Phase 2: CTO is designing architecture...", "SYSTEM")
             os.makedirs(self._path("specs"), exist_ok=True)
-            self.run_opencode("ralph-architect", "Read ideas.txt and questions.md. Generate specs/main.md.")
+            # Run this *outside* nix develop first to bootstrap the flake
+            subprocess.run(["opencode", "run", "--agent", "ralph-architect", 
+                          "Read ideas.txt. Create specs and a valid flake.nix for this project."])
         else:
             log("Skipping Phase 2 (specs/main.md exists)")
 
@@ -258,16 +266,7 @@ class RalphSystem:
             log("⚖️  System is judging work...", "SYSTEM")
             
             # Run Verification Command
-            # shell=True lets us run complex commands like "npm test && echo ok"
-            # cwd=self.root_dir ensures tests run in the project folder
-            result = subprocess.run(
-                t_verify, 
-                shell=True, 
-                capture_output=True, 
-                text=True, 
-                cwd=self.root_dir
-            )
-
+            result = self.verify_command(t_verify)
             if result.returncode == 0:
                 log("✅ Verification Passed.", "SUCCESS")
                 # Only commit if there are actually changes
@@ -300,11 +299,7 @@ class RalphSystem:
                     )
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Ralph: The Authoritative AI Loop")
-    parser.add_argument("project_path", nargs="?", default=".", help="Path to the project folder")
-    args = parser.parse_args()
-
-    ralph = RalphSystem(args.project_path)
+    ralph = RalphSystem()
     
     # 1. Bootstrapping
     ralph.ensure_agents()
