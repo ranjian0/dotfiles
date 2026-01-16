@@ -24,3 +24,7 @@ _darcs
 
 setup.sh
 postsetup.sh
+
+node_modules
+package.json
+bun.lock
