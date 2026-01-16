@@ -3,7 +3,7 @@ import os
 import sys
 import subprocess
 import re
-import argparse
+import json
 from typing import Optional, Tuple
 
 # --- CONFIGURATION ---
@@ -114,55 +114,82 @@ You are a Senior Engineer.
 
 class RalphSystem:
     def __init__(self):
-        # Resolve to absolute path to avoid ambiguity
         self.plan_file = "IMPLEMENTATION_PLAN.md"
         self.feedback = ""
-                    
         log(f"Ralph Started!", "SYSTEM")
 
     def _path(self, *paths):
-        """Helper to construct absolute paths based on project root."""
         return os.path.join(".", *paths)
 
+    def ensure_config(self):
+        agent_dir = self._path(".opencode")
+        os.makedirs(agent_dir, exist_ok=True)
+        config_path = os.path.join(agent_dir, "opencode.json")
+        if not os.path.exists(config_path):
+            with open(config_path, "w") as f:
+                json.dump({"permission": "allow"}, f)
+
     def ensure_agents(self):
-        """Generates the agent definition files dynamically."""
         agent_dir = self._path(".opencode", "agent")
         os.makedirs(agent_dir, exist_ok=True)
-        
         for name, content in AGENTS.items():
             path = os.path.join(agent_dir, f"{name}.md")
             with open(path, "w") as f:
                 f.write(content)
-            # No log here to keep UI clean, but files are ensured
 
     def run_opencode(self, agent: str, prompt: str):
-        """Wraps the OpenCode CLI, setting CWD explicitly."""
-        cmd = ["nix", "develop", "--command", 
-               "opencode", "run", "--agent", agent, "--model", "zai-coding-plan/glm-4.7", prompt]
-        try:
-            # check=True raises CalledProcessError on non-zero exit
-            # cwd=self.root_dir ensures opencode operates in the project folder
-            subprocess.run(cmd, shell=True, check=True)
-        except subprocess.CalledProcessError:
-            log(f"Agent {agent} crashed.", "ERROR")
-            sys.exit(1)
-        except FileNotFoundError:
-            log("Command 'opencode' not found. Is it installed?", "ERROR")
-            sys.exit(1)
+        """Wraps the OpenCode CLI, handling Nix environment automatically."""
+        
+        # Base command elements
+        base_cmd = ["opencode", "run", "--agent", agent, prompt]
+        
+        # Check if we should use Nix
+        if os.path.exists("flake.nix"):
+            # We must escape the prompt because we are passing it inside a shell string
+            # when using 'nix develop --command bash -c ...'
+            safe_prompt = prompt.replace("'", "'\\''")
+            
+            # Construct command string for shell=True
+            # We use 'bash -c' to ensure arguments execute correctly inside the nix shell
+            opencode_cmd = f"opencode run --agent {agent} '{safe_prompt}'"
+            full_cmd = f"nix develop --command bash -c \"{opencode_cmd}\""
+            
+            log(f"Running in Nix: {agent}", "INFO")
+            try:
+                subprocess.run(full_cmd, shell=True, check=True)
+            except subprocess.CalledProcessError:
+                log(f"Agent {agent} crashed in Nix.", "ERROR")
+                # Do not exit, let the loop retry or fail gracefully
+        else:
+            # Bootstrap mode (Raw execution)
+            log(f"Running Raw (Bootstrap): {agent}", "INFO")
+            try:
+                subprocess.run(base_cmd, check=True)
+            except subprocess.CalledProcessError:
+                log(f"Agent {agent} crashed (Raw).", "ERROR")
+                sys.exit(1)
+            except FileNotFoundError:
+                log("Command 'opencode' not found. Is it installed?", "ERROR")
+                sys.exit(1)
 
     def verify_command(self, cmd):
         # Run verification inside the isolated environment
-        nix_cmd = f"nix develop --command bash -c '{cmd}'"
-        return subprocess.run(nix_cmd, shell=True, capture_output=True, text=True)
+        if os.path.exists("flake.nix"):
+            # Escape single quotes for the bash string
+            safe_cmd = cmd.replace("'", "'\\''")
+            nix_cmd = f"nix develop --command bash -c '{safe_cmd}'"
+            return subprocess.run(nix_cmd, shell=True, capture_output=True, text=True)
+        else:
+            return subprocess.run(cmd, shell=True, capture_output=True, text=True)
 
     def phase_1_analysis(self):
         if not os.path.exists(self._path("ideas.txt")):
-            log(f"ideas.txt not found in {self.root_dir}", "ERROR")
+            log("ideas.txt not found.", "ERROR")
             sys.exit(1)
             
         if not os.path.exists(self._path("questions.md")):
             log("Phase 1: Analyst is reviewing ideas...", "SYSTEM")
-            self.run_opencode("ralph-analyst", "Read ideas.txt. You MUST use the 'write' tool to save a file named 'questions.md' containing the technical questions. Do not output them to chat.")
+            self.run_opencode("ralph-analyst", "Read ideas.txt. You MUST use the 'write' tool to save 'questions.md'.")
         else:
             log("Skipping Phase 1 (questions.md exists)")
 
@@ -170,9 +197,15 @@ class RalphSystem:
         if not os.path.exists(self._path("specs", "main.md")) or not os.path.exists("flake.nix"):
             log("Phase 2: CTO is designing architecture...", "SYSTEM")
             os.makedirs(self._path("specs"), exist_ok=True)
-            # Run this *outside* nix develop first to bootstrap the flake
-            subprocess.run(["opencode", "run", "--agent", "ralph-architect", 
-                          "Read ideas.txt. Create specs and a valid flake.nix for this project."])
+            self.run_opencode("ralph-architect", 
+                          "Read ideas.txt. Create specs/main.md and a valid flake.nix for this project. Use 'write' tool.")
+            
+            # --- FIX: Git Add Flake ---
+            # Nix Flakes must be in the git index to work
+            if os.path.exists("flake.nix"):
+                log("Staging flake.nix for Nix compatibility...", "SYSTEM")
+                # We check=False because git might fail if not init yet, though Docker config ensures safe dir
+                subprocess.run(["git", "add", "flake.nix"], check=False)
         else:
             log("Skipping Phase 2 (specs/main.md exists)")
 
@@ -190,7 +223,6 @@ class RalphSystem:
         except FileNotFoundError:
             return None
 
-        # Regex matches: - [ ] [ID:XYZ] Description || VERIFY: cmd
         pattern = r'- \[ \] \[(ID:.*?)\] (.*?) \|\| VERIFY: (.*)'
         match = re.search(pattern, content)
         
@@ -211,23 +243,15 @@ class RalphSystem:
                     f.write(line)
 
     def git_commit(self, message: str):
-        # We use cwd=self.root_dir to ensure git acts on the right repo
-        subprocess.run(["git", "add", "."], check=True, cwd=self.root_dir)
-        subprocess.run(["git", "commit", "-m", message], check=True, cwd=self.root_dir)
+        subprocess.run(["git", "add", "."], check=True)
+        subprocess.run(["git", "commit", "-m", message], check=True)
 
     def git_reset(self):
-        # Danger: This is hard reset. Ensure root_dir is correct!
-        subprocess.run(["git", "reset", "--hard"], check=True, cwd=self.root_dir)
-        subprocess.run(["git", "clean", "-fd"], check=True, cwd=self.root_dir)
+        subprocess.run(["git", "reset", "--hard"], check=True)
+        subprocess.run(["git", "clean", "-fd"], check=True)
 
     def git_status_check(self) -> bool:
-        """Returns True if there are uncommitted changes."""
-        res = subprocess.run(
-            ["git", "status", "--porcelain"], 
-            capture_output=True, 
-            text=True, 
-            cwd=self.root_dir
-        )
+        res = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True)
         return bool(res.stdout.strip())
 
     def phase_4_execution_loop(self):
@@ -265,26 +289,27 @@ class RalphSystem:
             # 2. Authority Check
             log("⚖️  System is judging work...", "SYSTEM")
             
-            # Run Verification Command
+            # Check verification first
             result = self.verify_command(t_verify)
+            
             if result.returncode == 0:
                 log("✅ Verification Passed.", "SUCCESS")
-                # Only commit if there are actually changes
+                
                 if self.git_status_check():
                     self.git_commit(f"Ralph: {t_id} - {t_desc}")
                 else:
-                    log("No new changes to commit (task was likely pre-satisfied).", "INFO")
+                    log("No new changes (task pre-satisfied).", "INFO")
 
                 self.mark_task_done(t_id)
                 self.feedback = "" 
             else:
                 log("❌ Verification Failed.", "ERROR")
-                # Handle empty stderr
+                
+                # Check for progress
                 if not self.git_status_check():
-                    log("Agent made no changes AND verification failed. Forcing retry.", "WARN")
-                    self.feedback = "SYSTEM REJECTION: You made no file changes and the verification command failed. You must write code to satisfy the task."
+                    log("Agent made no changes AND failed. Forcing retry.", "WARN")
+                    self.feedback = f"SYSTEM REJECTION: You made no file changes and the command '{t_verify}' failed. Implement the code."
                 else:
-                    # They tried, but failed. Revert.
                     err_out = result.stderr if result.stderr else result.stdout
                     print(f"{Colors.FAIL}OUTPUT: {err_out[-500:]}{Colors.ENDC}")
                     
@@ -292,7 +317,7 @@ class RalphSystem:
                     self.git_reset()
                     
                     self.feedback = (
-                        f"SYSTEM REJECTION: Your code failed the verification command: '{t_verify}'.\n"
+                        f"SYSTEM REJECTION: Your code failed verification: '{t_verify}'.\n"
                         f"EXIT CODE: {result.returncode}\n"
                         f"OUTPUT LOG:\n{err_out[-1000:]}\n\n"
                         "I have reverted your changes. Try again."
@@ -300,16 +325,9 @@ class RalphSystem:
 
 if __name__ == "__main__":
     ralph = RalphSystem()
-    
-    # 1. Bootstrapping
+    ralph.ensure_config()
     ralph.ensure_agents()
-    
-    # 2. Requirements & Specs
     ralph.phase_1_analysis()
     ralph.phase_2_architect()
-    
-    # 3. Planning
     ralph.phase_3_planning()
-    
-    # 4. Execution
     ralph.phase_4_execution_loop()

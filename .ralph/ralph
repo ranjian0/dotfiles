@@ -4,6 +4,10 @@ set -e  # CRITICAL: Stop immediately if any command fails
 IMAGE_NAME="ralph-loop"
 CURRENT_DIR=$(pwd)
 AUTH_FILE="$HOME/.local/share/opencode/auth.json"
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PYTHON_SCRIPT="$SCRIPT_DIR/ralph_runner.py"
+
+chmod +x "$PYTHON_SCRIPT"
 
 # 1. Verify Auth exists on host
 if [ ! -f "$AUTH_FILE" ]; then
@@ -14,9 +18,8 @@ fi
 
 # 2. Build Image (Only if it doesn't exist)
 if [[ "$(docker images -q $IMAGE_NAME 2> /dev/null)" == "" ]]; then
-    echo "📦 Building Ralph God Image (This will take a while, go get coffee)..."
+    echo "📦 Building Ralph Image (This will take a while, go get coffee)..."
     # Assumes Dockerfile.ralph and ralph_runner.py are in the same folder as this script
-    SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
     docker build -t $IMAGE_NAME -f "$SCRIPT_DIR/Dockerfile.ralph" "$SCRIPT_DIR"
 fi
 
@@ -34,4 +37,5 @@ docker run -it --rm \
     --network host \
     -v "$CURRENT_DIR:/workspace" \
     -v "$AUTH_FILE:/root/.local/share/opencode/auth.json" \
+    -v "$SCRIPT_DIR/ralph_runner.py:/usr/local/bin/ralph" \
     $IMAGE_NAME
