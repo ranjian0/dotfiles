@@ -12,3 +12,5 @@ alias pipclean="uv pip freeze | cut -d "@" -f1 | xargs uv pip uninstall -y"
 alias venv="uv venv && source .venv/bin/activate"
 
 alias ni="npm install"
+alias oc="opencode"
+alias ol="ollama"
