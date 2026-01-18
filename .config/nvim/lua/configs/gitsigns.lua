@@ -21,7 +21,7 @@ function M.config()
     signcolumn = true,
     numhl = false,
     linehl = false,
-    word_diff = true,
+    word_diff = false,
     watch_gitdir = {
       interval = 1000,
       follow_files = true,
