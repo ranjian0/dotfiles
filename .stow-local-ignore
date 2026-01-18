@@ -28,3 +28,4 @@ postsetup.sh
 node_modules
 package.json
 bun.lock
+NVIM.md
