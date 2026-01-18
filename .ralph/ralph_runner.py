@@ -4,7 +4,8 @@ import sys
 import subprocess
 import re
 import json
-from typing import Optional, Tuple
+import shlex
+from typing import Optional, Tuple, List
 
 # --- CONFIGURATION ---
 
@@ -63,10 +64,16 @@ You are a Visionary CTO.
 2. Create `specs/main.md`.
 3. In this spec, answer every question definitively. Make specific tech stack choices.
 4. Do not ask the user. You have authority.
-**CRITICAL**: Create a `flake.nix` file that provides the development environment.
+**CRITICAL**: Create a `devbox.json` file that provides the development environment.
 - Include ALL necessary languages (go, rust, python, node).
 - Include ALL build tools (cmake, gcc, make).
-- Use the `nixpkgs` input.
+- Use the devbox.json format with packages array.
+Example devbox.json:
+```json
+{
+  "packages": ["python310", "go", "rust", "nodejs", "cmake", "gcc", "make"]
+}
+```
 """,
     "ralph-planner": """---
 name: ralph-planner
@@ -93,7 +100,7 @@ Example:
 - [ ] [ID:003] Auth Tests || VERIFY: npm test tests/auth.test.js
 
 Make the tasks granular. Steps must be verifiable via CLI.
-**NOTE**: Assume the environment defined in `flake.nix` is active.
+**NOTE**: Assume the environment defined in `devbox.json` is active.
 """,
     "ralph-builder": """---
 name: ralph-builder
@@ -144,30 +151,27 @@ class RalphSystem:
                 f.write(content)
 
     def run_opencode(self, agent: str, prompt: str, force_raw: bool = False):
-        """Wraps the OpenCode CLI, handling Nix environment automatically."""
+        """Wraps the OpenCode CLI, handling Devbox environment automatically."""
 
-        # Base command elements
         base_cmd = ["opencode", "run", "--agent", agent, prompt]
 
-        # Check if we should use Nix (and if we aren't forced to avoid it)
-        # We NEVER run the architect inside Nix, because they are the one fixing it.
-        use_nix = (
-            os.path.exists("flake.nix") and not force_raw and agent != "ralph-architect"
+        use_devbox = (
+            os.path.exists("devbox.json")
+            and not force_raw
+            and agent != "ralph-architect"
         )
 
-        if use_nix:
-            # We must escape the prompt because we are passing it inside a shell string
-            safe_prompt = prompt.replace("'", "'\\''")
+        if use_devbox:
+            safe_prompt = shlex.quote(prompt)
+            opencode_cmd = f"opencode run --agent {agent} {safe_prompt}"
+            full_cmd = ["devbox", "shell", "--", "bash", "-c", opencode_cmd]
 
-            opencode_cmd = f"opencode run --agent {agent} '{safe_prompt}'"
-            full_cmd = f'nix develop --command bash -c "{opencode_cmd}"'
-
-            log(f"Running in Nix: {agent}", "INFO")
+            log(f"Running in Devbox: {agent}", "INFO")
             try:
-                subprocess.run(full_cmd, shell=True, check=True)
+                subprocess.run(full_cmd, check=True)
             except subprocess.CalledProcessError:
-                log(f"Agent {agent} crashed inside Nix.", "ERROR")
-                raise  # Re-raise to trigger higher-level handling
+                log(f"Agent {agent} crashed inside Devbox.", "ERROR")
+                raise
         else:
             log(f"Running Raw (Bootstrap): {agent}", "INFO")
             try:
@@ -179,13 +183,11 @@ class RalphSystem:
                 log("Command 'opencode' not found. Is it installed?", "ERROR")
                 sys.exit(1)
 
-    def verify_command(self, cmd):
-        # Run verification inside the isolated environment
-        if os.path.exists("flake.nix"):
-            # Escape single quotes for the bash string
-            safe_cmd = cmd.replace("'", "'\\''")
-            nix_cmd = f"nix develop --command bash -c '{safe_cmd}'"
-            return subprocess.run(nix_cmd, shell=True, capture_output=True, text=True)
+    def verify_command(self, cmd: str):
+        if os.path.exists("devbox.json"):
+            safe_cmd = shlex.quote(cmd)
+            devbox_cmd = ["devbox", "shell", "--", "bash", "-c", safe_cmd]
+            return subprocess.run(devbox_cmd, capture_output=True, text=True)
         else:
             return subprocess.run(cmd, shell=True, capture_output=True, text=True)
 
@@ -204,46 +206,48 @@ class RalphSystem:
             log("Skipping Phase 1 (questions.md exists)")
 
     def phase_2_architect(self):
-        # We loop here until a valid flake.nix is generated
         first_run = True
         error_log = ""
+        max_architect_retries = 5
 
         while True:
-            # Condition to exit phase 2: specs exist AND flake exists AND flake is valid
             if os.path.exists(self._path("specs", "main.md")) and os.path.exists(
-                "flake.nix"
+                "devbox.json"
             ):
-                # Test validity
-                log("Validating Nix Environment...", "SYSTEM")
-                # Ensure it's in git or nix flakes will fail
-                subprocess.run(["git", "add", "flake.nix"], check=False)
+                log("Validating Devbox Environment...", "SYSTEM")
 
                 check = subprocess.run(
-                    ["nix", "develop", "--command", "echo", "ok"],
+                    ["devbox", "shell", "--", "echo", "ok"],
                     capture_output=True,
                     text=True,
                 )
 
                 if check.returncode == 0:
-                    log("✅ Environment Verified.", "SUCCESS")
+                    log("Environment Verified.", "SUCCESS")
                     break
                 else:
-                    log("❌ Environment Invalid. Forcing Architect to fix.", "WARN")
-                    error_log = f"Your previous `flake.nix` failed to load. \n\n ERROR: \n {check.stderr} \n\n Fix the syntax error. Ensure variables are in scope."
+                    log("Environment Invalid. Forcing Architect to fix.", "WARN")
+                    error_log = f"Your previous `devbox.json` failed to load.\n\n ERROR: \n {check.stderr} \n\n Fix the syntax error."
                     first_run = False
 
-            # Run Agent
+            if not first_run and error_log:
+                if max_architect_retries <= 0:
+                    log(
+                        "Max architect retries reached. Skipping environment validation.",
+                        "ERROR",
+                    )
+                    break
+                max_architect_retries -= 1
+
             log("Phase 2: Architect is working...", "SYSTEM")
             os.makedirs(self._path("specs"), exist_ok=True)
 
-            prompt = "Read ideas.txt. Create specs/main.md and a valid flake.nix."
+            prompt = "Read ideas.txt. Create specs/main.md and a valid devbox.json."
             if not first_run:
                 prompt = f"FIX THE BUILD. {error_log}"
 
-            # Force Raw mode so Architect doesn't crash trying to enter the broken shell
             self.run_opencode("ralph-architect", prompt, force_raw=True)
-
-            # If we just ran, loop back to validate
+            error_log = ""
             first_run = False
 
     def phase_3_planning(self):
@@ -268,6 +272,17 @@ class RalphSystem:
 
         if match:
             return (match.group(1), match.group(2).strip(), match.group(3).strip())
+
+        alt_pattern = r"- \[ \]\s*(ID:\d+)\s+(.+?)\s+\|\|\s*VERIFY:\s*(.+)"
+        alt_match = re.search(alt_pattern, content)
+
+        if alt_match:
+            return (
+                alt_match.group(1),
+                alt_match.group(2).strip(),
+                alt_match.group(3).strip(),
+            )
+
         return None
 
     def mark_task_done(self, task_id: str):
@@ -298,19 +313,21 @@ class RalphSystem:
 
     def phase_4_execution_loop(self):
         log("Phase 4: Entering Authoritative Execution Loop", "SYSTEM")
+        max_task_retries = 3
 
         while True:
             task = self.get_next_task()
 
             if not task:
                 if os.path.exists(self._path(self.plan_file)):
-                    log("🎉 All tasks completed! System exiting.", "SUCCESS")
+                    log("All tasks completed! System exiting.", "SUCCESS")
                     break
                 else:
                     log("Plan file missing. Planner failed.", "ERROR")
                     sys.exit(1)
 
             t_id, t_desc, t_verify = task
+            task_retries = 0
 
             print("\n" + "=" * 60)
             log(f"LOCKED TARGET: {t_id}", "SYSTEM")
@@ -318,52 +335,69 @@ class RalphSystem:
             log(f"PROOF REQUIRED: {t_verify}")
             print("=" * 60 + "\n")
 
-            # 1. Run Agent
-            prompt = (
-                f"Implementing Task {t_id}: '{t_desc}'. "
-                f"Do not edit {self.plan_file}. "
-                f"Verification command that must pass: '{t_verify}'. "
-                f"{self.feedback}"
-            )
+            while task_retries < max_task_retries:
+                prompt = (
+                    f"Implementing Task {t_id}: '{t_desc}'. "
+                    f"Do not edit {self.plan_file}. "
+                    f"Verification command that must pass: '{t_verify}'. "
+                    f"{self.feedback}"
+                )
 
-            self.run_opencode("ralph-builder", prompt)
+                self.run_opencode("ralph-builder", prompt)
 
-            # 2. Authority Check
-            log("⚖️  System is judging work...", "SYSTEM")
+                log("System is judging work...", "SYSTEM")
 
-            # Check verification first
-            result = self.verify_command(t_verify)
+                result = self.verify_command(t_verify)
 
-            if result.returncode == 0:
-                log("✅ Verification Passed.", "SUCCESS")
+                if result.returncode == 0:
+                    log("Verification Passed.", "SUCCESS")
 
-                if self.git_status_check():
-                    self.git_commit(f"Ralph: {t_id} - {t_desc}")
+                    if self.git_status_check():
+                        self.git_commit(f"Ralph: {t_id} - {t_desc}")
+                    else:
+                        log("No new changes (task pre-satisfied).", "INFO")
+
+                    self.mark_task_done(t_id)
+                    self.feedback = ""
+                    break
                 else:
-                    log("No new changes (task pre-satisfied).", "INFO")
-
-                self.mark_task_done(t_id)
-                self.feedback = ""
-            else:
-                log("❌ Verification Failed.", "ERROR")
-
-                # Check for progress
-                if not self.git_status_check():
-                    log("Agent made no changes AND failed. Forcing retry.", "WARN")
-                    self.feedback = f"SYSTEM REJECTION: You made no file changes and the command '{t_verify}' failed. Implement the code."
-                else:
-                    err_out = result.stderr if result.stderr else result.stdout
-                    print(f"{Colors.FAIL}OUTPUT: {err_out[-500:]}{Colors.ENDC}")
-
-                    log("Reverting changes...", "WARN")
-                    self.git_reset()
-
-                    self.feedback = (
-                        f"SYSTEM REJECTION: Your code failed verification: '{t_verify}'.\n"
-                        f"EXIT CODE: {result.returncode}\n"
-                        f"OUTPUT LOG:\n{err_out[-1000:]}\n\n"
-                        "I have reverted your changes. Try again."
+                    task_retries += 1
+                    log(
+                        f"Verification Failed (attempt {task_retries}/{max_task_retries}).",
+                        "ERROR",
                     )
+
+                    if not self.git_status_check():
+                        if task_retries >= max_task_retries:
+                            log(f"Max retries reached. Skipping task {t_id}.", "ERROR")
+                            self.mark_task_done(t_id)
+                            self.feedback = ""
+                            break
+                        log("Agent made no changes. Forcing retry.", "WARN")
+                        self.feedback = f"SYSTEM REJECTION: You made no file changes and the command '{t_verify}' failed. Implement the code."
+                    else:
+                        err_out = result.stderr if result.stderr else result.stdout
+                        print(f"OUTPUT: {err_out[-500:]}")
+
+                        if task_retries >= max_task_retries:
+                            log(
+                                f"Max retries reached. Reverting and skipping task.",
+                                "WARN",
+                            )
+                            self.git_reset()
+                            self.mark_task_done(t_id)
+                            self.feedback = ""
+                            break
+
+                        log("Reverting changes...", "WARN")
+                        self.git_reset()
+
+                        self.feedback = (
+                            f"SYSTEM REJECTION: Your code failed verification: '{t_verify}'.\n"
+                            f"EXIT CODE: {result.returncode}\n"
+                            f"OUTPUT LOG:\n{err_out[-1000:]}\n\n"
+                            "I have reverted your changes. Try again."
+                        )
 
 
 if __name__ == "__main__":

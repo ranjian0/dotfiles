@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e  # CRITICAL: Stop immediately if any command fails
+set -e
 
 IMAGE_NAME="ralph-loop"
 CURRENT_DIR=$(pwd)
@@ -9,33 +9,27 @@ PYTHON_SCRIPT="$SCRIPT_DIR/ralph_runner.py"
 
 chmod +x "$PYTHON_SCRIPT"
 
-# 1. Verify Auth exists on host
 if [ ! -f "$AUTH_FILE" ]; then
-    echo "❌ OpenCode auth not found at $AUTH_FILE"
+    echo "OpenCode auth not found at $AUTH_FILE"
     echo "Please run 'opencode auth login' on your host machine first."
     exit 1
 fi
 
-# 2. Build Image (Only if it doesn't exist)
 if [[ "$(docker images -q $IMAGE_NAME 2> /dev/null)" == "" ]]; then
-    echo "📦 Building Ralph Image (This will take a while, go get coffee)..."
-    # Assumes Dockerfile.ralph and ralph_runner.py are in the same folder as this script
+    echo "Building Ralph Image..."
     docker build -t $IMAGE_NAME -f "$SCRIPT_DIR/Dockerfile.ralph" "$SCRIPT_DIR"
 fi
 
-# 3. Check for ideas.txt
 if [ ! -f "$CURRENT_DIR/ideas.txt" ]; then
-    echo "❌ No ideas.txt found in current directory."
+    echo "No ideas.txt found in current directory."
     echo "Create one to tell Ralph what to build."
     exit 1
 fi
 
-# 4. Run Ralph
-# We mount the current directory to /workspace so files persist on your machine
-echo "🚀 Launching Ralph..."
+echo "Launching Ralph..."
 docker run -it --rm \
     --network host \
     -v "$CURRENT_DIR:/workspace" \
-    -v "$AUTH_FILE:/root/.local/share/opencode/auth.json" \
+    -v "$AUTH_FILE:/root/.local/share/opencode/auth.json:ro" \
     -v "$SCRIPT_DIR/ralph_runner.py:/usr/local/bin/ralph" \
     $IMAGE_NAME
