@@ -122,7 +122,7 @@ class RalphSystem:
     def __init__(self):
         self.plan_file = "IMPLEMENTATION_PLAN.md"
         self.feedback = ""
-        log(f"Ralph Started!", "SYSTEM")
+        log("Ralph Started!", "SYSTEM")
 
     def _path(self, *paths):
         return os.path.join(".", *paths)
