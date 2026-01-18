@@ -19,6 +19,24 @@
         },
         "qwen3-coder:30b": {
           "name": "Qwen3 Coder 30B"
+        },
+        "qwen3:4b": {
+          "name": "Qwen3 4B"
+        },
+        "ministral-3:8b": {
+          "name": "ministral-3 8B"
+        },
+        "granite3.1-moe:3b": {
+          "name": "Granite3.1 Moe 3B"
+        },
+        "cogito:3b": {
+          "name": "Cogito 3B"
+        },
+        "deepseek-r1:14b": {
+          "name": "DeepSeek R1 14B"
+        },
+        "nanbeige4:3b": {
+          "name": "Nanbeige4 3B"
         }
       }
     }
