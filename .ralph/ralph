@@ -15,9 +15,28 @@ if [ ! -f "$AUTH_FILE" ]; then
     exit 1
 fi
 
-if [[ "$(docker images -q $IMAGE_NAME 2> /dev/null)" == "" ]]; then
-    echo "Building Ralph Image..."
+needs_rebuild() {
+    if [[ "$(docker images -q $IMAGE_NAME 2> /dev/null)" == "" ]]; then
+        return 0
+    fi
+
+    newest_source_mtime=$(stat -c %Y "$SCRIPT_DIR/Dockerfile.ralph" "$SCRIPT_DIR/ralph_runner.py" 2>/dev/null | sort -rn | head -1)
+
+    image_created=$(docker inspect -f '{{.Created}}' "$IMAGE_NAME" 2>/dev/null)
+    if [ -z "$image_created" ]; then
+        return 0
+    fi
+
+    image_epoch=$(date -d "$image_created" +%s 2>/dev/null || echo 0)
+
+    [ "$newest_source_mtime" -gt "$image_epoch" ]
+}
+
+if needs_rebuild; then
+    echo "Source files newer than image. Rebuilding..."
     docker build -t $IMAGE_NAME -f "$SCRIPT_DIR/Dockerfile.ralph" "$SCRIPT_DIR"
+else
+    echo "Image up to date, skipping rebuild."
 fi
 
 if [ ! -f "$CURRENT_DIR/ideas.txt" ]; then

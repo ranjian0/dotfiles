@@ -1,49 +1,44 @@
-# Base: Ubuntu with Devbox
 FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# 1. Install System Dependencies
 RUN apt-get update && apt-get install -y \
     curl \
     xz-utils \
     git \
     python3 \
+    nodejs \
+    npm \
     sudo \
     && rm -rf /var/lib/apt/lists/*
 
-# 2. Create Ralph user
+# Create Ralph user
 RUN userdel -r ubuntu || true
 RUN useradd -m -s /bin/bash -u 1000 ralph && \
     echo "ralph ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# 3. Install Nix (required by Devbox)
 USER ralph
 WORKDIR /home/ralph
 
-RUN curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
-RUN curl -fsSL https://get.jetify.com/devbox | bash
+RUN curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install | sh
+RUN curl -fsSL https://get.jetify.com/devbox | bash -s -- -f
 
 ENV USER=ralph
 
 
-# 5. Install Devbox
 ENV NPM_CONFIG_PREFIX=/home/ralph/.npm-global
 ENV PATH=$PATH:/home/ralph/.npm-global/bin
 RUN mkdir -p /home/ralph/.npm-global
 RUN npm install -g opencode-ai
 
-# 6. Configure Git with defaults (can be overridden)
 ENV GIT_USER_EMAIL="${GIT_USER_EMAIL:-ralph@bot.com}"
 ENV GIT_USER_NAME="${GIT_USER_NAME:-Ralph Bot}"
 RUN git config --global user.email "$GIT_USER_EMAIL" && \
     git config --global user.name "$GIT_USER_NAME" && \
     git config --global --add safe.directory /workspace
 
-# 7. Setup Workspace
 WORKDIR /workspace
 
-# 8. Copy the Orchestrator
 COPY --chown=ralph:ralph ralph_runner.py /usr/local/bin/ralph
 RUN chmod +x /usr/local/bin/ralph
 
