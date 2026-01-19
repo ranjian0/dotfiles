@@ -18,20 +18,6 @@ return {
   },
 
   {
-    "nvim-neo-tree/neo-tree.nvim",
-    branch = "v3.x",
-    cmd = "Neotree",
-    keys = { "<leader>fe" },
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-tree/nvim-web-devicons",
-      "MunifTanjim/nui.nvim",
-      "3rd/image.nvim",
-    },
-    config = function() require("lazy.nav").config() end,
-  },
-
-  {
     "williamboman/mason.nvim",
     event = "VeryLazy",
     config = function() require("lazy.lsp").config() end,
@@ -153,6 +139,7 @@ return {
     lazy = false,
     opts = {
       bigfile = { enabled = true },
+      files = { enabled = true },
       notifier = { enabled = true },
       quickfile = { enabled = true },
       words = { enabled = true },
@@ -165,6 +152,7 @@ return {
       statuscolumn = { enabled = false },
     },
     keys = {
+      { "<leader>fe", function() Snacks.picker.explorer() end, desc = "File Explorer" },
       { "<leader>ha", function() Snacks.picker.bookmarks.add() end, desc = "Add Bookmark" },
       { "<leader>hr", function() Snacks.picker.bookmarks.remove() end, desc = "Remove Bookmark" },
       { "<leader>hh", function() Snacks.picker.bookmarks() end, desc = "Bookmarks" },
@@ -267,9 +255,5 @@ return {
     "moll/vim-bbye",
     cmd = "Bdelete",
   },
-
-  {
-    "3rd/image.nvim",
-    lazy = true,
-  },
 }
+
