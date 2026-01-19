@@ -32,19 +32,19 @@ map("n", "<leader>cS", "<cmd>:%s/\\t/  /g<cr>", { desc = "Convert all tabs into 
 map("n", "<leader>cT", "<cmd>:%s/  /\\t/g<cr>", { desc = "Convert all spaces into tabs" })
 map("n", "<leader>cW", "<cmd>:%s/\\s\\+$//e<cr>", { desc = "Trim all trailing whitespace" })
 
-map("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "Find Files (Root Dir)" })
-map("n", "<leader>fg", "<cmd>Telescope git_files<cr>", { desc = "Find Files (git-files)" })
-map("n", "<leader>fb", "<cmd>Telescope buffers sort_mru=true sort_lastused=true<cr>", { desc = "Buffers" })
-map("n", "<leader>fr", "<cmd>Telescope frecency workspace=CWD<cr>", { desc = "Recent Files" })
-map("n", "<leader>fp", "<cmd>Telescope projects<cr>", { desc = "Projects" })
+map("n", "<leader>ff", function() Snacks.picker.files() end, { desc = "Find Files (Root Dir)" })
+map("n", "<leader>fg", function() Snacks.picker.git_files() end, { desc = "Find Files (git-files)" })
+map("n", "<leader>fb", function() Snacks.picker.buffers() end, { desc = "Buffers" })
+map("n", "<leader>fr", function() Snacks.picker.recent() end, { desc = "Recent Files" })
+map("n", "<leader>fp", function() Snacks.picker.projects() end, { desc = "Projects" })
 
-map("n", "<leader>fsg", "<cmd>Telescope live_grep<cr>", { desc = "Live Grep" })
+map("n", "<leader>fsg", function() Snacks.picker.grep() end, { desc = "Live Grep" })
 map("n", "<leader>fsr", "<cmd>Spectre<cr>", { desc = "Search and Replace" })
 map("n", "<leader>fsw", "<cmd>Spectre open_file_cwd<cr>", { desc = "Search in Current File" })
 
 map("n", "<leader>gg", "<cmd>LazyGit<cr>", { desc = "LazyGit" })
 map("n", "<leader>gd", "<cmd>DiffviewOpen<cr>", { desc = "Git Diff" })
-map("n", "<leader>gc", "<cmd>Telescope git_commits<cr>", { desc = "Commit History" })
+map("n", "<leader>gc", function() Snacks.picker.git_log() end, { desc = "Commit History" })
 
 map("n", "<leader>ghu", "<cmd>Gitsigns undo_stage_hunk<cr>", { desc = "Undo Stage Hunk" })
 map("n", "<leader>ghn", "<cmd>Gitsigns next_hunk<cr>", { desc = "Next Hunk" })
@@ -98,11 +98,11 @@ map("n", "<leader>tmv", "<cmd>ToggleTerm direction=vertical<cr>", { desc = "Term
 
 map("t", "<C-g>", "<C-\\><C-n>", { desc = "Exit Terminal Mode" })
 
-map("n", "<leader>uu", "<cmd>Telescope undo<cr>", { desc = "Undo History" })
+map("n", "<leader>uu", function() Snacks.picker.undo() end, { desc = "Undo History" })
 
-map("n", "<leader>kk", "<cmd>Telescope keymaps<cr>", { desc = "Key Maps" })
+map("n", "<leader>kk", function() Snacks.picker.keymaps() end, { desc = "Key Maps" })
 
-map("n", "<leader>vc", "<cmd>Telescope colorscheme<cr>", { desc = "Colorscheme with Preview" })
+map("n", "<leader>vc", function() Snacks.picker.colorschemes() end, { desc = "Colorscheme with Preview" })
 
 map("n", "<leader>wh", "<C-w>h", { desc = "Go to Left Window", remap = true })
 map("n", "<leader>wj", "<C-w>j", { desc = "Go to Lower Window", remap = true })

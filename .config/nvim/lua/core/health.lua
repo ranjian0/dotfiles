@@ -42,7 +42,6 @@ vim.api.nvim_create_user_command("NvimHealth", function()
     "lazy.nvim",
     "nvim-lspconfig",
     "nvim-treesitter",
-    "telescope.nvim",
     "mason.nvim",
   }
   for _, plugin in ipairs(critical_plugins) do

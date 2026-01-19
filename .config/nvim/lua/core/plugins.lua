@@ -69,16 +69,7 @@ return {
 
   { "BurntSushi/ripgrep", lazy = true },
 
-  {
-    "nvim-telescope/telescope.nvim",
-    event = "VeryLazy",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-    },
-    config = function() require("lazy.nav").config() end,
-  },
-  { "nvim-telescope/telescope-frecency.nvim", event = "VeryLazy" },
-  { "debugloop/telescope-undo.nvim", event = "VeryLazy" },
+
 
   { "kdheepak/lazygit.nvim", event = "VeryLazy", dependencies = { "nvim-lua/plenary.nvim" } },
 
@@ -139,6 +130,7 @@ return {
     lazy = false,
     opts = {
       bigfile = { enabled = true },
+      picker = { enabled = true },
       files = { enabled = true },
       notifier = { enabled = true },
       quickfile = { enabled = true },
@@ -153,6 +145,16 @@ return {
     },
     keys = {
       { "<leader>fe", function() Snacks.picker.explorer() end, desc = "File Explorer" },
+      { "<leader>ff", function() Snacks.picker.files() end, desc = "Find Files" },
+      { "<leader>fg", function() Snacks.picker.git_files() end, desc = "Find Git Files" },
+      { "<leader>fb", function() Snacks.picker.buffers() end, desc = "Buffers" },
+      { "<leader>fr", function() Snacks.picker.recent() end, desc = "Recent Files" },
+      { "<leader>fp", function() Snacks.picker.projects() end, desc = "Projects" },
+      { "<leader>fsg", function() Snacks.picker.grep() end, desc = "Live Grep" },
+      { "<leader>gc", function() Snacks.picker.git_log() end, desc = "Git Commits" },
+      { "<leader>uu", function() Snacks.picker.undo() end, desc = "Undo History" },
+      { "<leader>kk", function() Snacks.picker.keymaps() end, desc = "Keymaps" },
+      { "<leader>vc", function() Snacks.picker.colorschemes() end, desc = "Colorschemes" },
       { "<leader>ha", function() Snacks.picker.bookmarks.add() end, desc = "Add Bookmark" },
       { "<leader>hr", function() Snacks.picker.bookmarks.remove() end, desc = "Remove Bookmark" },
       { "<leader>hh", function() Snacks.picker.bookmarks() end, desc = "Bookmarks" },
@@ -188,11 +190,7 @@ return {
     config = function() require("lazy.extras").config() end,
   },
 
-  {
-    "ahmedkhalf/project.nvim",
-    event = "VeryLazy",
-    config = function() require("lazy.nav").config() end,
-  },
+
 
   {
     "nvim-neotest/nvim-nio",
@@ -230,7 +228,7 @@ return {
     "linux-cultist/venv-selector.nvim",
     event = "VeryLazy",
     ft = "python",
-    config = function() require("lazy.nav").config() end,
+    config = function() require("lazy.venv").config() end,
   },
 
   {
