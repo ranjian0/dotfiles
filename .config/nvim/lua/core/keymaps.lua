@@ -43,7 +43,7 @@ map("n", "<leader>fsr", "<cmd>Spectre<cr>", { desc = "Search and Replace" })
 map("n", "<leader>fsw", "<cmd>Spectre open_file_cwd<cr>", { desc = "Search in Current File" })
 
 map("n", "<leader>gg", "<cmd>LazyGit<cr>", { desc = "LazyGit" })
-map("n", "<leader>gd", "<cmd>DiffviewOpen<cr>", { desc = "Git Diff" })
+map("n", "<leader>gd", function() Snacks.picker.git_diff() end, { desc = "Git Diff (Hunks)" })
 map("n", "<leader>gc", function() Snacks.picker.git_log() end, { desc = "Commit History" })
 
 map("n", "<leader>ghu", "<cmd>Gitsigns undo_stage_hunk<cr>", { desc = "Undo Stage Hunk" })
@@ -56,32 +56,18 @@ map("n", "<leader>ghl", "<cmd>Gitsigns blame_line<cr>", { desc = "Blame Line" })
 map("n", "<leader>ghd", "<cmd>Gitsigns diffthis<cr>", { desc = "Diff This" })
 map("n", "<leader>ghs", "<cmd>Gitsigns select_hunk<cr>", { desc = "Select Hunk" })
 
-map("n", "<leader>la", "<cmd>Lspsaga code_action<cr>", { desc = "Code Action" })
-map("n", "<leader>ld", "<cmd>Lspsaga preview_definition<cr>", { desc = "Preview Definition" })
-map("n", "<leader>lr", "<cmd>Lspsaga rename<cr>", { desc = "Rename" })
+map("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Code Action" })
+map("n", "<leader>cr", vim.lsp.buf.rename, { desc = "Rename" })
+map("n", "<leader>cf", function() vim.lsp.buf.format { async = true } end, { desc = "Format" })
 map("n", "<leader>lh", vim.lsp.buf.signature_help, { desc = "Signature Help" })
-map("n", "<leader>lf", function() vim.lsp.buf.format { async = true } end, { desc = "Format" })
-map("n", "<leader>lk", "<cmd>Lspsaga hover_doc<cr>", { desc = "Hover Doc" })
-map("n", "<leader>lo", "<cmd>Lspsaga outline<cr>", { desc = "Outline" })
-
-map("n", "<leader>lgd", "<cmd>Glance definitions<cr>", { desc = "Glance Definitions" })
-map("n", "<leader>lgr", "<cmd>Glance references<cr>", { desc = "Glance References" })
-map("n", "<leader>lgt", "<cmd>Glance type_definitions<cr>", { desc = "Glance Type Definitions" })
-map("n", "<leader>lgi", "<cmd>Glance implementations<cr>", { desc = "Glance Implementations" })
-
-map("n", "<leader>lin", "<cmd>Lspsaga diagnostic_jump_next<cr>", { desc = "Next Diagnostic" })
-map("n", "<leader>liN", "<cmd>Lspsaga diagnostic_jump_prev<cr>", { desc = "Previous Diagnostic" })
-map("n", "<leader>liq", vim.diagnostic.setloclist, { desc = "Diagnostics to Loclist" })
+map("n", "<leader>lk", vim.lsp.buf.hover, { desc = "Hover Doc" })
+map("n", "<leader>ll", vim.diagnostic.setloclist, { desc = "Diagnostics to Loclist" })
 
 map("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit All" })
 
 map("n", "<leader>qs", "<cmd>SessionSave<cr>", { desc = "Save Session" })
 map("n", "<leader>ql", "<cmd>SessionLoad<cr>", { desc = "Load Session" })
 map("n", "<leader>qd", "<cmd>SessionDelete<cr>", { desc = "Delete Session" })
-
-map("n", "<leader>sr", "<cmd>Spectre<cr>", { desc = "Search and Replace" })
-map("n", "<leader>sw", "<cmd>Spectre open_file_cwd<cr>", { desc = "Search in Current File" })
-map("n", "<leader>sp", "<cmd>Spectre open_visual<cr>", { desc = "Search in Selection" })
 
 map("n", "<leader>ttr", "<cmd>lua require('neotest').run.run()<cr>", { desc = "Run Test" })
 map("n", "<leader>ttf", "<cmd>lua require('neotest').run.run(vim.fn.expand('%'))<cr>", { desc = "Run File Tests" })
