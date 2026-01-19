@@ -1,66 +1,253 @@
 return {
-  -- themes
-  "sainnhe/sonokai",
-  "tiagovla/tokyodark.nvim",
-  "projekt0n/github-nvim-theme",
-  "olimorris/onedarkpro.nvim",
-  "miikanissi/modus-themes.nvim",
-  "rmehri01/onenord.nvim",
-  { "catppuccin/nvim",            name = "catppuccin" },
-  { "ahmedabdulrahman/aylin.vim", branch = "0.5-nvim" },
-  "rebelot/kanagawa.nvim",
-  "NLKNguyen/papercolor-theme",
-  "sainnhe/edge",
-  "nyoom-engineering/oxocarbon.nvim",
-  "AlexvZyl/nordic.nvim",
-  "kaicataldo/material.vim",
-  "neanias/everforest-nvim",
+  { "nvim-lua/plenary.nvim", lazy = true },
+  { "MunifTanjim/nui.nvim", lazy = true },
+  { "nvim-tree/nvim-web-devicons", lazy = true },
 
-  -- basics
-  "kyazdani42/nvim-web-devicons",
-  "nvim-lua/plenary.nvim",
-  "MunifTanjim/nui.nvim",
-  "akinsho/bufferline.nvim",
-  "moll/vim-bbye",
-  "3rd/image.nvim",
+  { "catppuccin/nvim", name = "catppuccin", lazy = false, priority = 1000 },
+  { "rebelot/kanagawa.nvim", lazy = false, priority = 1000 },
+  { "olimorris/onedarkpro.nvim", lazy = false, priority = 1000 },
+
   {
     "folke/noice.nvim",
     event = "VeryLazy",
     dependencies = {
       "MunifTanjim/nui.nvim",
       "rcarriga/nvim-notify",
-    }
+    },
+    config = function() require("lazy.ui").config() end,
   },
+
   {
     "nvim-neo-tree/neo-tree.nvim",
     branch = "v3.x",
     cmd = "Neotree",
+    keys = { "<leader>fe" },
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-tree/nvim-web-devicons",
       "MunifTanjim/nui.nvim",
       "3rd/image.nvim",
-    }
+    },
+    config = function() require("lazy.nav").config() end,
   },
 
-  -- LSP & completion
-  "williamboman/mason.nvim",
-  { "williamboman/mason-lspconfig.nvim", dependencies = { "mason.nvim" } },
-  "neovim/nvim-lspconfig",
-  "nvimdev/lspsaga.nvim",
-  "hrsh7th/cmp-nvim-lsp",
-  "hrsh7th/cmp-buffer",
-  "hrsh7th/cmp-path",
-  "hrsh7th/cmp-cmdline",
-  "hrsh7th/nvim-cmp",
-  "L3MON4D3/LuaSnip",
-  "nvim-treesitter/nvim-treesitter",
-  "nvim-treesitter/nvim-treesitter-textobjects",
-  "dnlhc/glance.nvim",
-  "tamago324/nlsp-settings.nvim",
-  "folke/trouble.nvim",
+  {
+    "williamboman/mason.nvim",
+    event = "VeryLazy",
+    config = function() require("lazy.lsp").config() end,
+  },
+  { "williamboman/mason-lspconfig.nvim", event = "VeryLazy" },
+  { "neovim/nvim-lspconfig", event = "VeryLazy" },
+  { "nvimdev/lspsaga.nvim", event = "VeryLazy" },
+  { "hrsh7th/cmp-nvim-lsp", event = "InsertEnter" },
+  { "hrsh7th/cmp-buffer", event = "InsertEnter" },
+  { "hrsh7th/cmp-path", event = "InsertEnter" },
+  { "hrsh7th/cmp-cmdline", event = "CmdlineEnter" },
+  { "hrsh7th/nvim-cmp", event = "InsertEnter" },
+  { "L3MON4D3/LuaSnip", event = "InsertEnter" },
+  { "nvim-treesitter/nvim-treesitter", event = "VeryLazy" },
+  { "nvim-treesitter/nvim-treesitter-textobjects", event = "VeryLazy" },
+  { "dnlhc/glance.nvim", event = "VeryLazy" },
+  { "tamago324/nlsp-settings.nvim", event = "VeryLazy" },
+  { "folke/trouble.nvim", event = "VeryLazy" },
+
+  {
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    config = function() require("lazy.ui").config() end,
+  },
+
+  {
+    "nvim-lualine/lualine.nvim",
+    event = "VeryLazy",
+    config = function() require("lazy.ui").config() end,
+  },
+
+  {
+    "akinsho/bufferline.nvim",
+    event = "VeryLazy",
+    config = function() require("lazy.ui").config() end,
+  },
+
+  {
+    "akinsho/toggleterm.nvim",
+    event = "VeryLazy",
+    config = function() require("lazy.term").config() end,
+  },
+
+  {
+    "lewis6991/gitsigns.nvim",
+    event = "VeryLazy",
+    config = function() require("lazy.git").config() end,
+  },
+
+  { "BurntSushi/ripgrep", lazy = true },
+
+  {
+    "nvim-telescope/telescope.nvim",
+    event = "VeryLazy",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+    config = function() require("lazy.nav").config() end,
+  },
+  { "nvim-telescope/telescope-frecency.nvim", event = "VeryLazy" },
+  { "debugloop/telescope-undo.nvim", event = "VeryLazy" },
+
+  { "kdheepak/lazygit.nvim", event = "VeryLazy", dependencies = { "nvim-lua/plenary.nvim" } },
+
+  {
+    "numToStr/Comment.nvim",
+    event = "VeryLazy",
+    config = function() require("lazy.editor").config() end,
+  },
+
+  { "rafamadriz/friendly-snippets", event = "InsertEnter" },
+  { "saadparwaiz1/cmp_luasnip", event = "InsertEnter" },
+
+  {
+    "echasnovski/mini.pairs",
+    event = "InsertEnter",
+    config = function() require("lazy.editor").config() end,
+  },
+
+  {
+    "echasnovski/mini.ai",
+    event = "VeryLazy",
+    config = function() require("lazy.editor").config() end,
+  },
+
+  {
+    "echasnovski/mini.hipatterns",
+    event = "VeryLazy",
+    config = function() require("lazy.extras").config() end,
+  },
+
+  {
+    "echasnovski/mini.surround",
+    event = "VeryLazy",
+    config = function() require("lazy.editor").config() end,
+  },
+
+  {
+    "stevearc/conform.nvim",
+    event = { "BufWritePre", "BufNewFile" },
+    config = function() require("lazy.format").config() end,
+  },
+
+  {
+    "mfussenegger/nvim-lint",
+    event = { "BufWritePost", "BufEnter", "InsertLeave" },
+    config = function() require("lazy.format").config() end,
+  },
+
+  {
+    "nvim-pack/nvim-spectre",
+    keys = { "<leader>sr", "<leader>sw", "<leader>sp" },
+    config = function() require("lazy.extras").config() end,
+  },
+
+  {
+    "folke/snacks.nvim",
+    priority = 1000,
+    lazy = false,
+    opts = {
+      bigfile = { enabled = true },
+      notifier = { enabled = true },
+      quickfile = { enabled = true },
+      words = { enabled = true },
+      terminal = {
+        enabled = false,
+      },
+      scroll = {
+        enabled = true,
+      },
+      statuscolumn = { enabled = false },
+    },
+    keys = {
+      { "<leader>ha", function() Snacks.picker.bookmarks.add() end, desc = "Add Bookmark" },
+      { "<leader>hr", function() Snacks.picker.bookmarks.remove() end, desc = "Remove Bookmark" },
+      { "<leader>hh", function() Snacks.picker.bookmarks() end, desc = "Bookmarks" },
+      { "<leader>ht", function() Snacks.picker.recent() end, desc = "Recent Files" },
+      { "<M-1>", function() Snacks.picker.bookmarks.global():find() end, desc = "Bookmark 1" },
+      { "<M-2>", function() Snacks.picker.bookmarks.global():find() end, desc = "Bookmark 2" },
+      { "<M-3>", function() Snacks.picker.bookmarks.global():find() end, desc = "Bookmark 3" },
+      { "<M-4>", function() Snacks.picker.bookmarks.global():find() end, desc = "Bookmark 4" },
+    },
+  },
+
+  {
+    "lukas-reineke/indent-blankline.nvim",
+    event = "VeryLazy",
+    config = function() require("lazy.extras").config() end,
+  },
+
+  {
+    "RRethy/vim-illuminate",
+    event = "VeryLazy",
+    config = function() require("lazy.extras").config() end,
+  },
+
+  {
+    "max397574/better-escape.nvim",
+    event = "InsertEnter",
+    config = function() require("lazy.editor").config() end,
+  },
+
+  {
+    "olimorris/persisted.nvim",
+    event = "VeryLazy",
+    config = function() require("lazy.extras").config() end,
+  },
+
+  {
+    "ahmedkhalf/project.nvim",
+    event = "VeryLazy",
+    config = function() require("lazy.nav").config() end,
+  },
+
+  {
+    "nvim-neotest/nvim-nio",
+    lazy = true,
+  },
+
+  {
+    "nvim-neotest/neotest",
+    event = "VeryLazy",
+    dependencies = {
+      "nvim-neotest/nvim-nio",
+    },
+    config = function() require("lazy.test").config() end,
+  },
+
+  {
+    "nvim-neotest/neotest-python",
+    event = "VeryLazy",
+    ft = "python",
+  },
+
+  {
+    "sindrets/diffview.nvim",
+    event = "VeryLazy",
+    config = function() require("lazy.git").config() end,
+  },
+
+  {
+    "akinsho/git-conflict.nvim",
+    event = "VeryLazy",
+    config = function() require("lazy.git").config() end,
+  },
+
+  {
+    "linux-cultist/venv-selector.nvim",
+    event = "VeryLazy",
+    ft = "python",
+    config = function() require("lazy.nav").config() end,
+  },
+
   {
     "sudo-tee/opencode.nvim",
+    event = "VeryLazy",
     dependencies = {
       "nvim-lua/plenary.nvim",
       {
@@ -73,47 +260,16 @@ return {
       },
       "nvim-telescope/telescope.nvim",
     },
+    config = function() require("lazy.ai").config() end,
   },
-  {
-    "folke/which-key.nvim",
-    event = "VeryLazy",
-    init = function()
-      vim.o.timeout = true
-      vim.o.timeoutlen = 500
-    end,
-  },
-  "nvim-lualine/lualine.nvim",
-  "akinsho/toggleterm.nvim",
-  "lewis6991/gitsigns.nvim",
-  "BurntSushi/ripgrep",
-  "nvim-telescope/telescope.nvim",
-  { "kdheepak/lazygit.nvim", dependencies = { "nvim-lua/plenary.nvim" } },
-  "numToStr/Comment.nvim",
-  "rafamadriz/friendly-snippets",
-  "saadparwaiz1/cmp_luasnip",
-  "echasnovski/mini.pairs",
-  "echasnovski/mini.ai",
-  "echasnovski/mini.hipatterns",
-  "echasnovski/mini.indentscope",
-  "echasnovski/mini.surround",
-  "stevearc/conform.nvim",
-  "mfussenegger/nvim-lint",
-  "nvim-telescope/telescope-frecency.nvim",
-  "debugloop/telescope-undo.nvim",
-  "nvim-pack/nvim-spectre",
-  "ThePrimeagen/harpoon",
-  "lukas-reineke/indent-blankline.nvim",
-  "RRethy/vim-illuminate",
-  "norcalli/nvim-colorizer.lua",
-  "max397574/better-escape.nvim",
-  "olimorris/persisted.nvim",
-  "ahmedkhalf/project.nvim",
-  "nvim-neotest/nvim-nio",
-  "nvim-neotest/neotest",
-  "sindrets/diffview.nvim",
-  "akinsho/git-conflict.nvim",
-  "nvim-neotest/neotest-python",
 
-  -- python
-  { "linux-cultist/venv-selector.nvim" },
+  {
+    "moll/vim-bbye",
+    cmd = "Bdelete",
+  },
+
+  {
+    "3rd/image.nvim",
+    lazy = true,
+  },
 }

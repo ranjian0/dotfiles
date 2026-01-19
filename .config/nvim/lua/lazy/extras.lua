@@ -1,0 +1,258 @@
+local utils = require("core.utils")
+
+local M = {}
+
+function M.config()
+  utils.safe_setup("illuminate", function()
+    require("illuminate").configure({
+      providers = {
+        "lsp",
+        "treesitter",
+        "regex",
+      },
+      delay = 100,
+      filetypes_denylist = {
+        "dirvish",
+        "fugitive",
+        "alpha",
+        "NvimTree",
+        "neo-tree",
+        "dashboard",
+        "lazy",
+        "mason",
+        "notify",
+        "toggleterm",
+      },
+      under_cursor = true,
+      large_file_cutoff = 2000,
+      large_file_overrides = {
+        providers = { "lsp" },
+      },
+    })
+  end)
+
+  utils.safe_setup("ibl", function()
+    local highlight = {
+      "IndentLine",
+    }
+
+    local hooks = require "ibl.hooks"
+
+    hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
+      vim.api.nvim_set_hl(0, "IndentLine", { fg = "#4b5263" })
+    end)
+
+    require("ibl").setup({
+      indent = {
+        highlight = highlight,
+        char = "│",
+      },
+      scope = {
+        enabled = true,
+        show_start = true,
+        show_end = true,
+        injected_languages = false,
+        highlight = highlight,
+        priority = 500,
+      },
+      exclude = {
+        filetypes = {
+          "help",
+          "alpha",
+          "dashboard",
+          "neo-tree",
+          "Trouble",
+          "lazy",
+          "mason",
+          "notify",
+          "toggleterm",
+          "lazyterm",
+        },
+      },
+    })
+  end)
+
+  utils.safe_setup("mini.hipatterns", function()
+    local hipatterns = require("mini.hipatterns")
+
+    hipatterns.setup({
+      highlighters = {
+        hex_color = hipatterns.gen_highlighter.hex_color({ pattern = "#%x%x%x%x%x%x" }),
+        shorthand = hipatterns.gen_highlighter.hex_color({ pattern = "#%x%x%x" }),
+        todo = {
+          pattern = "(TODO|FIXME|NOTE|HACK|XXX)",
+          group = "MiniHipatternsTodo",
+        },
+      },
+    })
+  end)
+
+  utils.safe_setup("spectre", function()
+    require("spectre").setup({
+      color_devicons = true,
+      open_cmd = "noswapfile vnew",
+      live_update = false,
+      line_sep_start = "┌-----------------------------------------",
+      result_padding = "  ",
+      line_sep = "└-----------------------------------------",
+      highlight = {
+        search = "SpectreSearch",
+        replace = "SpectreReplace",
+      },
+      mapping = {
+        ["toggle_line"] = {
+          map = "dd",
+          cmd = "<cmd>lua require('spectre').toggle_line()<CR>",
+          desc = "toggle current item",
+        },
+        ["enter_file"] = {
+          map = "<cr>",
+          cmd = "<cmd>lua require('spectre.actions').select_entry()<CR>",
+          desc = "goto current file",
+        },
+        ["send_to_qf"] = {
+          map = "<leader>q",
+          cmd = "<cmd>lua require('spectre.actions').send_to_qf()<CR>",
+          desc = "send all item to quickfix",
+        },
+        ["replace_cmd"] = {
+          map = "<leader>c",
+          cmd = "<cmd>lua require('spectre.actions').replace_cmd()<CR>",
+          desc = "input replace command",
+        },
+        ["show_option_menu"] = {
+          map = "<leader>o",
+          cmd = "<cmd>lua require('spectre').show_options()<CR>",
+          desc = "show option",
+        },
+        ["run_current_replace"] = {
+          map = "<leader>rc",
+          cmd = "<cmd>lua require('spectre.actions').run_current_replace()<CR>",
+          desc = "replace item under cursor",
+        },
+        ["run_replace"] = {
+          map = "<leader>R",
+          cmd = "<cmd>lua require('spectre.actions').run_replace()<CR>",
+          desc = "replace all",
+        },
+        ["change_view_mode"] = {
+          map = "<leader>v",
+          cmd = "<cmd>lua require('spectre').change_view()<CR>",
+          desc = "change result view mode",
+        },
+        ["change_replace_sed"] = {
+          map = "trs",
+          cmd = "<cmd>lua require('spectre').change_engine_replace('sed')<CR>",
+          desc = "use sed to replace",
+        },
+        ["change_replace_oxi"] = {
+          map = "tro",
+          cmd = "<cmd>lua require('spectre').change_engine_replace('oxi')<CR>",
+          desc = "use oxi to replace",
+        },
+        ["toggle_live_update"] = {
+          map = "<leader>tu",
+          cmd = "<cmd>lua require('spectre').toggle_live_update()<CR>",
+          desc = "update change when vim write",
+        },
+        ["resume_search"] = {
+          map = "<leader>l",
+          cmd = "<cmd>lua require('spectre').resume_search()<CR>",
+          desc = "resume last search before close",
+        },
+      },
+      find_engine = {
+        ["rg"] = {
+          cmd = "rg",
+          args = {
+            "--color=never",
+            "--no-heading",
+            "--with-filename",
+            "--line-number",
+            "--column",
+          },
+          options = {
+            ["ignore-case"] = {
+              value = "--ignore-case",
+              icon = "[I]",
+              desc = "ignore case",
+            },
+            ["hidden"] = {
+              value = "--hidden",
+              desc = "hidden file",
+              icon = "[H]",
+            },
+          },
+        },
+        ["ag"] = {
+          cmd = "ag",
+          args = {
+            "--vimgrep",
+            "-s",
+          },
+          options = {
+            ["ignore-case"] = {
+              value = "-i",
+              icon = "[I]",
+              desc = "ignore case",
+            },
+            ["hidden"] = {
+              value = "--hidden",
+              desc = "hidden file",
+              icon = "[H]",
+            },
+          },
+        },
+      },
+      replace_engine = {
+        ["sed"] = {
+          cmd = "sed",
+          args = nil,
+        },
+        ["oxi"] = {
+          cmd = "oxi",
+          args = { "-c", "run" },
+          options = {
+            ["ignore-case"] = {
+              value = "i",
+              icon = "[I]",
+              desc = "ignore case",
+            },
+          },
+        },
+      },
+      default = {
+        find = {
+          cmd = "rg",
+          options = { "hidden" },
+        },
+        replace = {
+          cmd = "sed",
+        },
+      },
+      replace_vim_cmd = "cdo",
+      is_open_target_win = true,
+      is_insert_mode = false,
+    })
+  end)
+
+  utils.safe_setup("persisted", function()
+    require("persisted").setup({
+      save_dir = vim.fn.expand(vim.fn.stdpath("state") .. "/sessions/"),
+      command = "VimSessionLoad",
+      lazy = false,
+      autoload = false,
+      autoremove = false,
+      autosave = true,
+      follow_cwd = true,
+      git_use_branch = true,
+      auto_save_no_events = {
+        "VimLeavePre",
+        "TabLeave",
+        "BufWinLeave",
+      },
+    })
+  end)
+end
+
+return M
