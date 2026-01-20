@@ -21,7 +21,6 @@ function M.config()
         "lazy",
         "mason",
         "notify",
-        "toggleterm",
       },
       under_cursor = true,
       large_file_cutoff = 2000,
@@ -65,8 +64,6 @@ function M.config()
           "lazy",
           "mason",
           "notify",
-          "toggleterm",
-          "lazyterm",
         },
       },
     })

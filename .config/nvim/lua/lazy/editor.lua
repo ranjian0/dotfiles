@@ -23,7 +23,7 @@ function M.config()
 
   utils.safe_setup("mini.pairs", function()
     require("mini.pairs").setup({
-      modes = { insert = true, command = true, terminal = false },
+      modes = { insert = true, command = true, terminal = true },
       mappings = {
         ["("] = { action = "open", pair = "()", neigh_pattern = "[^\\].", register = { cr = false } },
         ["["] = { action = "open", pair = "[]", neigh_pattern = "[^\\].", register = { cr = false } },
