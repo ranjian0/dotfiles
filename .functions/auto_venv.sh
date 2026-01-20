@@ -6,7 +6,7 @@
 autoload -U add-zsh-hook
 
 _auto_venv() {
-    local venv_names=(".venv" "venv" ".env" "env")
+    local venv_names=(".venv" "venv")
     local venv_found=""
     local venv_path=""
 
