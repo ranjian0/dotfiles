@@ -32,10 +32,8 @@ ENV PATH=$PATH:/home/ralph/.npm-global/bin:/home/ralph/.nix-profile/bin:/home/ra
 RUN mkdir -p /home/ralph/.npm-global
 RUN npm install -g opencode-ai
 
-ENV GIT_USER_EMAIL="${GIT_USER_EMAIL:-ralph@bot.com}"
-ENV GIT_USER_NAME="${GIT_USER_NAME:-Ralph Bot}"
-RUN git config --global user.email "$GIT_USER_EMAIL" && \
-    git config --global user.name "$GIT_USER_NAME" && \
+RUN git config --global user.email "ralph@bot.com" && \
+    git config --global user.name "Ralph Bot" && \
     git config --global --add safe.directory /workspace
 
 WORKDIR /workspace
