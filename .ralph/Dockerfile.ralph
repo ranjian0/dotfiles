@@ -18,6 +18,7 @@ RUN useradd -m -s /bin/bash -u 1000 ralph && \
     echo "ralph ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 USER ralph
+RUN mkdir -p /home/ralph/.local/share/opencode
 WORKDIR /home/ralph
 
 RUN curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install | sh
@@ -27,7 +28,7 @@ ENV USER=ralph
 
 
 ENV NPM_CONFIG_PREFIX=/home/ralph/.npm-global
-ENV PATH=$PATH:/home/ralph/.npm-global/bin
+ENV PATH=$PATH:/home/ralph/.npm-global/bin:/home/ralph/.nix-profile/bin:/home/ralph/.local/bin
 RUN mkdir -p /home/ralph/.npm-global
 RUN npm install -g opencode-ai
 

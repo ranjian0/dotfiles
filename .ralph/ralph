@@ -47,8 +47,8 @@ fi
 
 echo "Launching Ralph..."
 docker run -it --rm \
-    --network host \
+    --network bridge \
     -v "$CURRENT_DIR:/workspace" \
-    -v "$AUTH_FILE:/root/.local/share/opencode/auth.json:ro" \
+    -v "$AUTH_FILE:/home/ralph/.local/share/opencode/auth.json:ro" \
     -v "$SCRIPT_DIR/ralph_runner.py:/usr/local/bin/ralph" \
     $IMAGE_NAME

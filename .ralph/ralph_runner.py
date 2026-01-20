@@ -5,9 +5,48 @@ import subprocess
 import re
 import json
 import shlex
+import signal
+import atexit
 from typing import Optional, Tuple, List
 
 # --- CONFIGURATION ---
+
+SUBPROCESS_TIMEOUT = 600  # 10 minutes max for any subprocess
+
+
+def reset_terminal():
+    """Reset terminal to sane state after ANSI corruption."""
+    sys.stdout.write("\033[0m")  # Reset all attributes
+    sys.stdout.write("\033[?25h")  # Show cursor
+    sys.stdout.flush()
+    # Try to run reset command as last resort
+    try:
+        subprocess.run(["tput", "sgr0"], timeout=5, capture_output=True)
+    except Exception:
+        pass
+
+
+def safe_truncate(text: str, max_chars: int) -> str:
+    """Truncate text without breaking ANSI escape sequences."""
+    if not text or len(text) <= max_chars:
+        return text
+    # Take the last max_chars, then find and close any unclosed ANSI sequences
+    truncated = text[-max_chars:]
+    # Prepend reset to clear any partial escape sequences from truncation
+    return f"\033[0m...{truncated}\033[0m"
+
+
+def signal_handler(signum, frame):
+    """Handle termination signals gracefully."""
+    reset_terminal()
+    log(f"Received signal {signum}. Cleaning up...", "WARN")
+    sys.exit(128 + signum)
+
+
+# Register signal handlers
+signal.signal(signal.SIGINT, signal_handler)
+signal.signal(signal.SIGTERM, signal_handler)
+atexit.register(reset_terminal)
 
 
 class Colors:
@@ -22,15 +61,15 @@ class Colors:
 
 def log(msg, type="INFO"):
     if type == "INFO":
-        print(f"{Colors.OKBLUE}[INFO]{Colors.ENDC} {msg}")
+        print(f"{Colors.OKBLUE}[INFO]{Colors.ENDC} {msg}", flush=True)
     elif type == "SUCCESS":
-        print(f"{Colors.OKGREEN}[SUCCESS]{Colors.ENDC} {msg}")
+        print(f"{Colors.OKGREEN}[SUCCESS]{Colors.ENDC} {msg}", flush=True)
     elif type == "WARN":
-        print(f"{Colors.WARNING}[WARN]{Colors.ENDC} {msg}")
+        print(f"{Colors.WARNING}[WARN]{Colors.ENDC} {msg}", flush=True)
     elif type == "ERROR":
-        print(f"{Colors.FAIL}[ERROR]{Colors.ENDC} {msg}")
+        print(f"{Colors.FAIL}[ERROR]{Colors.ENDC} {msg}", flush=True)
     elif type == "SYSTEM":
-        print(f"{Colors.HEADER}[SYSTEM]{Colors.ENDC} {msg}")
+        print(f"{Colors.HEADER}[SYSTEM]{Colors.ENDC} {msg}", flush=True)
 
 
 # --- AGENT PROMPTS ---
@@ -168,28 +207,47 @@ class RalphSystem:
 
             log(f"Running in Devbox: {agent}", "INFO")
             try:
-                subprocess.run(full_cmd, check=True)
-            except subprocess.CalledProcessError:
-                log(f"Agent {agent} crashed inside Devbox.", "ERROR")
+                subprocess.run(full_cmd, check=True, timeout=SUBPROCESS_TIMEOUT)
+            except subprocess.TimeoutExpired:
+                log(f"Agent {agent} timed out after {SUBPROCESS_TIMEOUT}s.", "ERROR")
+                reset_terminal()
+                raise
+            except subprocess.CalledProcessError as e:
+                log(
+                    f"Agent {agent} crashed inside Devbox with exit code {e.returncode}.",
+                    "ERROR",
+                )
+                reset_terminal()
+                raise
+            except FileNotFoundError as e:
+                log(f"Command 'devbox' not found: {e}", "ERROR")
                 raise
         else:
             log(f"Running Raw (Bootstrap): {agent}", "INFO")
             try:
-                subprocess.run(base_cmd, check=True)
-            except subprocess.CalledProcessError:
-                log(f"Agent {agent} crashed (Raw).", "ERROR")
+                subprocess.run(base_cmd, check=True, timeout=SUBPROCESS_TIMEOUT)
+            except subprocess.TimeoutExpired:
+                log(f"Agent {agent} timed out after {SUBPROCESS_TIMEOUT}s.", "ERROR")
+                reset_terminal()
                 raise
-            except FileNotFoundError:
-                log("Command 'opencode' not found. Is it installed?", "ERROR")
+            except subprocess.CalledProcessError as e:
+                log(
+                    f"Agent {agent} crashed (Raw) with exit code {e.returncode}.",
+                    "ERROR",
+                )
+                reset_terminal()
+                raise
+            except FileNotFoundError as e:
+                log(f"Command 'opencode' not found: {e}. Is it installed?", "ERROR")
                 sys.exit(1)
 
     def verify_command(self, cmd: str):
         if os.path.exists("devbox.json"):
             safe_cmd = shlex.quote(cmd)
             devbox_cmd = ["devbox", "shell", "--", "bash", "-c", safe_cmd]
-            return subprocess.run(devbox_cmd, capture_output=True, text=True)
+            return subprocess.run(devbox_cmd, capture_output=True, text=True, timeout=120)
         else:
-            return subprocess.run(cmd, shell=True, capture_output=True, text=True)
+            return subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=120)
 
     def phase_1_analysis(self):
         if not os.path.exists(self._path("ideas.txt")):
@@ -216,18 +274,28 @@ class RalphSystem:
             ):
                 log("Validating Devbox Environment...", "SYSTEM")
 
-                check = subprocess.run(
-                    ["devbox", "shell", "--", "echo", "ok"],
-                    capture_output=True,
-                    text=True,
-                )
+                try:
+                    check = subprocess.run(
+                        ["devbox", "shell", "--", "echo", "ok"],
+                        capture_output=True,
+                        text=True,
+                        timeout=60,  # 60 seconds max for validation
+                    )
 
-                if check.returncode == 0:
-                    log("Environment Verified.", "SUCCESS")
-                    break
-                else:
-                    log("Environment Invalid. Forcing Architect to fix.", "WARN")
-                    error_log = f"Your previous `devbox.json` failed to load.\n\n ERROR: \n {check.stderr} \n\n Fix the syntax error."
+                    if check.returncode == 0:
+                        log("Environment Verified.", "SUCCESS")
+                        break
+                    else:
+                        log("Environment Invalid. Forcing Architect to fix.", "WARN")
+                        error_log = f"Your previous `devbox.json` failed to load.\n\n ERROR: \n {safe_truncate(check.stderr, 500)} \n\n Fix the syntax error."
+                        first_run = False
+                except subprocess.TimeoutExpired:
+                    log("Devbox validation timed out after 60s.", "ERROR")
+                    error_log = "Devbox shell timed out. The devbox.json may have invalid packages."
+                    first_run = False
+                except (subprocess.CalledProcessError, FileNotFoundError) as e:
+                    log(f"Devbox validation failed: {e}", "ERROR")
+                    error_log = f"Devbox command error: {e}. Ensure Devbox is installed and accessible."
                     first_run = False
 
             if not first_run and error_log:
@@ -329,11 +397,11 @@ class RalphSystem:
             t_id, t_desc, t_verify = task
             task_retries = 0
 
-            print("\n" + "=" * 60)
+            print("\n" + "=" * 60, flush=True)
             log(f"LOCKED TARGET: {t_id}", "SYSTEM")
             log(f"TASK: {t_desc}")
             log(f"PROOF REQUIRED: {t_verify}")
-            print("=" * 60 + "\n")
+            print("=" * 60 + "\n", flush=True)
 
             while task_retries < max_task_retries:
                 prompt = (
@@ -377,7 +445,7 @@ class RalphSystem:
                         self.feedback = f"SYSTEM REJECTION: You made no file changes and the command '{t_verify}' failed. Implement the code."
                     else:
                         err_out = result.stderr if result.stderr else result.stdout
-                        print(f"OUTPUT: {err_out[-500:]}")
+                        print(f"OUTPUT: {safe_truncate(err_out, 500)}", flush=True)
 
                         if task_retries >= max_task_retries:
                             log(
@@ -395,7 +463,7 @@ class RalphSystem:
                         self.feedback = (
                             f"SYSTEM REJECTION: Your code failed verification: '{t_verify}'.\n"
                             f"EXIT CODE: {result.returncode}\n"
-                            f"OUTPUT LOG:\n{err_out[-1000:]}\n\n"
+                            f"OUTPUT LOG:\n{safe_truncate(err_out, 1000)}\n\n"
                             "I have reverted your changes. Try again."
                         )
 
