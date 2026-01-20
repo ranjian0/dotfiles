@@ -7,7 +7,7 @@ import json
 import shlex
 import signal
 import atexit
-from typing import Optional, Tuple, List
+from typing import Optional, Tuple
 
 # --- CONFIGURATION ---
 
