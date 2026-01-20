@@ -63,13 +63,9 @@ map("n", "<leader>tes", "<cmd>lua require('neotest').summary.toggle()<cr>", { de
 map("n", "<leader>teo", "<cmd>lua require('neotest').output.open({ enter = true })<cr>", { desc = "Test Output" })
 
 
-map("n", "<leader>tmt", "<cmd>ToggleTerm direction=tab<cr>", { desc = "Terminal Tab" })
-map("n", "<leader>tmn", function() terminal.Terminal:new():toggle() end, { desc = "Terminal New" })
-map("n", "<leader>tmf", "<cmd>ToggleTerm direction=float<cr>", { desc = "Terminal Float" })
-map("n", "<leader>tmh", "<cmd>ToggleTerm direction=horizontal<cr>", { desc = "Terminal Horizontal" })
-map("n", "<leader>tmv", "<cmd>ToggleTerm direction=vertical<cr>", { desc = "Terminal Vertical" })
 
-map("t", "<C-g>", "<C-\\><C-n>", { desc = "Exit Terminal Mode" })
+map("t", "<Esc>", "<C-\\><C-n>", { desc = "Exit Terminal Mode" })
+map({ "n", "t" }, "<C-\\>", function() Snacks.terminal.toggle() end, { desc = "Toggle Terminal" })
 
 map("n", "<leader>uu", function() Snacks.picker.undo() end, { desc = "Undo History" })
 
@@ -147,15 +143,6 @@ map("n", "<leader>cr", vim.lsp.buf.rename, { desc = "Rename" })
 map("n", "<leader>cf", function() vim.lsp.buf.format { async = true } end, { desc = "Format" })
 
 map("n", "<leader>tt", function() Snacks.terminal.toggle() end, { desc = "Toggle Terminal" })
-map("n", "<leader>th", function() Snacks.terminal.toggle("horizontal") end, { desc = "Terminal Horizontal" })
-map("n", "<leader>tv", function() Snacks.terminal.toggle("vertical") end, { desc = "Terminal Vertical" })
-map("n", "<leader>tf", function() Snacks.terminal.toggle("float") end, { desc = "Terminal Float" })
-map("n", "<leader>tn", function() Snacks.terminal.open("new") end, { desc = "Terminal New" })
-map("n", "<leader>t1", function() Snacks.terminal.toggle("horizontal", "Terminal 1") end, { desc = "Terminal 1" })
-map("n", "<leader>t2", function() Snacks.terminal.toggle("horizontal", "Terminal 2") end, { desc = "Terminal 2" })
-map("n", "<leader>t3", function() Snacks.terminal.toggle("horizontal", "Terminal 3") end, { desc = "Terminal 3" })
-map("n", "<leader>t4", function() Snacks.terminal.toggle("horizontal", "Terminal 4") end, { desc = "Terminal 4" })
-map("n", "<leader>t5", function() Snacks.terminal.toggle("horizontal", "Terminal 5") end, { desc = "Terminal 5" })
 
 map("n", "<leader>ld", function() Snacks.picker.lsp_definitions() end, { desc = "Go to Definition" })
 map("n", "<leader>lg", function() Snacks.picker.lsp_declarations() end, { desc = "Go to Declaration" })
