@@ -37,6 +37,12 @@
         },
         "nanbeige4:3b": {
           "name": "Nanbeige4 3B"
+        },
+        "gemma3:12b": {
+          "name": "Gemma 3 12B"
+        },
+        "glm-4.7-flash": {
+          "name": "GLM 4.7 Flash"
         }
       }
     }
