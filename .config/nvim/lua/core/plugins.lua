@@ -114,7 +114,7 @@ return {
 
   {
     "nvim-pack/nvim-spectre",
-    keys = { "<leader>fsr", "<leader>fsw", "<leader>fsp" },
+    cmd = "Spectre",
     config = function() require("lazy.spectre").config() end,
   },
 
@@ -124,7 +124,13 @@ return {
     lazy = false,
     opts = {
       bigfile = { enabled = true },
-      picker = { enabled = true },
+      picker = {
+        enabled = true,
+        sources = {
+          grep = { hidden = true },
+          files = { hidden = true },
+        },
+      },
       files = { enabled = true },
       notifier = { enabled = true },
       quickfile = { enabled = true },

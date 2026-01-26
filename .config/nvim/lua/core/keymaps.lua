@@ -39,7 +39,7 @@ map("n", "<leader>fr", function() Snacks.picker.recent() end, { desc = "Recent F
 map("n", "<leader>fp", function() Snacks.picker.projects() end, { desc = "Projects" })
 
 map("n", "<leader>fsg", function() Snacks.picker.grep() end, { desc = "Live Grep" })
-map("n", "<leader>fsr", "<cmd>Spectre<cr>", { desc = "Search & Replace" })
+map("n", "<leader>sr", "<cmd>Spectre<cr>", { desc = "Search & Replace" })
 map("n", "<leader>fsw", "<cmd>Spectre open_file_cwd<cr>", { desc = "Search Current File" })
 
 map("n", "<leader>gg", "<cmd>LazyGit<cr>", { desc = "LazyGit" })
