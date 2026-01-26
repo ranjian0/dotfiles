@@ -19,4 +19,4 @@ alias ow-kill="pkill -f 'open-webui serve' && echo 'Open WebUI stopped.'"
 alias cc="claude"
 alias cc-gpt="ANTHROPIC_AUTH_TOKEN=ollama ANTHROPIC_BASE_URL=http://localhost:11434 claude --model gpt-oss:20b"
 alias cc-glm-flash="ANTHROPIC_AUTH_TOKEN=ollama ANTHROPIC_BASE_URL=http://localhost:11434 claude --model glm-4.7-flash"
-alias cc-glm-47="ANTHROPIC_AUTH_TOKEN=${ZAI_API_KEY} ANTHROPIC_BASE_URL=https://api.z.ai/api/anthropic API_TIMEOUT_MS=3000000 claude --model glm-4.7"
+alias cc-glm-47='ANTHROPIC_AUTH_TOKEN=${ZAI_API_KEY} ANTHROPIC_BASE_URL=https://api.z.ai/api/anthropic API_TIMEOUT_MS=3000000 claude --model glm-4.7'
