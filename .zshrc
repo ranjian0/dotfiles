@@ -152,4 +152,4 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 export PATH=/home/ranjian0/.opencode/bin:$PATH
 
 # API KEYS
-source AI_API_KEYS.sh
+source ~/AI_API_KEYS.sh
