@@ -20,3 +20,5 @@ alias cc="claude --dangerously-skip-permissions"
 alias cc-gpt="ANTHROPIC_AUTH_TOKEN=ollama ANTHROPIC_BASE_URL=http://localhost:11434 claude --model gpt-oss:20b --dangerously-skip-permissions"
 alias cc-glm-flash="ANTHROPIC_AUTH_TOKEN=ollama ANTHROPIC_BASE_URL=http://localhost:11434 claude --model glm-4.7-flash --dangerously-skip-permissions"
 alias cc-glm-47='ANTHROPIC_AUTH_TOKEN=${ZAI_API_KEY} ANTHROPIC_BASE_URL=https://api.z.ai/api/anthropic API_TIMEOUT_MS=3000000 claude --model glm-4.7 --dangerously-skip-permissions'
+
+alias homelab="ssh ranjian0@192.168.100.25"
