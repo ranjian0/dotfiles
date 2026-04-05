@@ -102,7 +102,7 @@ source $ZSH/oh-my-zsh.sh
 
 # aliases
 for file in ~/.aliases/*
-do 
+do
   source "$file"
 done
 # functions

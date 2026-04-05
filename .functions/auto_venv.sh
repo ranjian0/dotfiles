@@ -32,5 +32,3 @@ _auto_venv() {
     fi
 }
 
-add-zsh-hook chpwd _auto_venv
-_auto_venv
